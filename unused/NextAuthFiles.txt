@@ -1,0 +1,133 @@
+import { useSession } from "next-auth/react"
+
+* [To Be Parsed To Various Pages As Hooks]
+1) Session : 
+a) Client getSession()
+b)Server: getServerSession
+c) getCsrfToken()
+d) authOptions
+
+2) Providers
+a) getProviders()
+
+3) Sign In 
+a) signIn
+<email, google, callback url, redirect etc>
+
+4) signOut()
+
+5) SessionProvider
+
+
+Auth Hooks Or Options Hooks
+
+1. auth 
+Page : auth.ts 
+[Exports NextAuthOptions to  nextauth.ts] -> next.aut[NextAuthOptions] -> getServerSideProps(authOptions)
+
+
+2. authOptions
+
+
+
+* Pages 
+You build these pages to pass in these hooks 
+
+1)  Protected Pages:pages/protected.jsx
+2) Admin Pages :pages/admin.jsx
+3) App.js :pages/_app.jsx
+
+ a) SessionProvider
+
+4)Next Auth page: pages/api/auth/[...nextauth].ts
+a) JWT 
+SubHook: <getToken>
+b) Adapter 
+c) auth 
+i) <providers, default signins> 
+Eg. TwitterProvider<clientid, clientsecret> 
+ 
+ii) Providers With Env Credentials  : GoogleProvider, TwittterProvider ,EmailProviders, CredentialsProvider  (Same as i in some way)
+d) cookies
+e) logs
+
+f) Object Imports
+i) pages < signIn, signOut, error, verifyRequest, newUser> 
+g)NextAuthOptions 
+
+5) Profile Page: pages/profile.tsx
+6) Example Pages: pages/api/example.js
+
+7) pages/index.js
+8) /app/api/auth/[...nextauth]/route.ts
+9. Signup Page (If you want a custom signup page else use nextauth.ts)
+10. SignIn Page (If you want a custom sign in page else use nextauth.ts) 
+Next Auth pages 
+i) pages/auth/signin.tsx
+ii) pages/auth/email-signin.tsx
+iii) pages/auth/credentials-signin.tsx
+
+11. getServerSideProps Page
+a) getServerSideProps (context.req, context.res, authOption) //We get authOption parsed from auth.ts
+12. API router 
+a) getServerSession(req, res, authOptions) //We get authOption parsed from auth.ts
+
+13. middleware.ts (for setting restrictions)
+a) withAuth, import: authOptions(frm next.auts) 
+
+* Existing Interfaces (Typescript.)
+1.    jwt 
+   <encode, decode> 
+2. OAuthConfig
+<wellKnown, authorization,token,userinfo,type,id,version,checks,clientId, clientSecret, idToken,region, issuer, client, allowDangerousEmailAccountLinking, style, authorization>
+
+* Already Existing Objects ( With set values or ways of setting the values)
+1. sessions 
+<strategy, maxAge,updateAge, generateSessionToken>
+2. jwt 
+<<encode and decode>, secret, handler>
+Ways to set : getToken 
+3. pages 
+ < signin, signout, error, verifyRequest, newUser>
+4. callbacks 
+<signin, redirect, session, jwt, signIn > 
+5. events 
+<signin, signout,createUser, updateUser, linkAccount, session>
+6. cookies{<sessionToken, callbackUrl, csrfToken, pkceCodeVerifier,state, nonce>}(Has multiple Objects)
+
+ //Objects From  Type OAuthConfig
+7. authorization
+<url, params>
+8. token
+9. userinfo
+10. userinfo
+
+// Custom Provider Object
+11. Google Provider Object  {Other providers can be developed this way}
+
+
+
+New Interfaces
+New Objects 
+
+Reusable Components  (Always Found Within Pages)
+
+
+Routes 
+Utils 
+Hooks 
+
+Env 
+Example 
+1. Twitter Details
+a) TWITTER_ID
+b) TWITTER_SECRET
+
+Signin WorkFlow
+Sign in button click -> Providers-> Redorect to Signin Page-> Compute signin option(Google) -> Aurthorizion -> Form -> Validation of Credentials 
+-> Generate One Time Access Code + Callback url -> Access token -> Session Token
+
+Packages 
+
+Database 
+Firebase

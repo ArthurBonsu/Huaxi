@@ -1,0 +1,50 @@
+/**truffle(develop)> const instance = await RewardDistributor.deployed()
+undefined
+truffle(develop)> instance.address */
+
+/*Truffle Develop started at http://127.0.0.1:9545/
+
+Accounts:
+(0) 0xe2021b32656764d3e3fccbbf98ca77bb24ffeb8e
+(1) 0xad0829b177df9780886109bcf1a0afd305bbe628
+(2) 0x14a1ca9dc964ae5e9329ae6bebd7cc3033bb4f73
+(3) 0x81a6e5e444c66ba321f24cb208a95e33f6e1b2f1
+(4) 0x0e7251415d77f2683004bf4f831d0265854bc7ad
+(5) 0xc06e9fd2730de26fa9f59f52b085a6156251d012
+(6) 0xf19351d8f57576fb85fd9a44b65432e3109f15fb
+(7) 0xa223befb3669a97efd219cb30b015cbcd9b9a041
+(8) 0x830dc3749ba6d6b34246bc3b93f695b3b7160a75
+(9) 0xa7a80d88260b308a73cb3a1687a460ed1e4aed68
+
+Private Keys:
+(0) 8f9b9fb10b97336177d0064b52e14a35b9db4bc1875094e88cd417eadedf3a52
+(1) 294fb00e4eb3ff2962cfa46094f82bc730ed6fff73e2004b6981a3bc618bc767
+(2) 709612db00c366af9b2451fcaee77d3eec45ff843ac27af4d09cdc3cd83b9c41
+(3) 6e69669e2117db4e5e9ee4382101efa52970f289b8169a22417036300319067d
+(4) 0a7f022df7c539422ebbf1553d1967c3d1a66902f5940e269103325824f7d7b2
+(5) 652c8624fe5961f40b3aad5f6940ac1779bf0c8f5597c0b783abe4ede9c287da
+(6) ed1cd1db05cce0c452ae1faf20b9268237601e948c5f70fab698334e74b1709b
+(7) aa0699e66d4d07e92c3566e17926fb7d47f49f02f67791a5dafbbe40c2d41ef7
+(8) 11a94bce9477132329049a92487791a257454152ab958307f24509f283a79b14
+(9) 1966fa15b8d23641c883d30be713c9786758d33d1c75b027e8ece3875096a0a0
+*/
+
+const BlockchainRegistryBase =  '0xFB61F22BacF92C32a3Fa4ECcF6DB5c12Eb71654d';
+
+const BlockchainRegistry = '0x71db4933bf0342b290ada075b9b40f61Cac4A88D';
+const BlockchainMonitor =    '0x56e3b418E151A6a70262f337b5c4115415dB2592';
+const ChaCha20Poly1305 =  '0x3dB865F0181A652EE731adf92557677D609f4705';
+const MetadataParser = '0x65C7dEBC72689bEea81cC670b621fF57f97795db';
+const PacechainChannel = '0xCdB1B7246Ba7dF364C773b8311e5B905B2b23386';
+const SpeculativeTransactionHandler = '0xa6d512B846D3bcA0498C4178577d8c55900FDAFE';
+const ConfidenceScoreCalculator = '0xF352c192e1E4aA3618Df70b8de510189BF5cdd5F';
+const AssetTransferProcessor = '0x6E3372f20f931d16679bA21Ebcd63C2eAd4E1B4b';
+const TransactionValidator = '0x59b92Ab6e4054f752C7E8ac5Cb846B9eCD67F5a3';
+const RewardDistributor = '0x8c771E0dD72fF614dB5d3cf16c38D76BB4E62872';
+const RewardToken = '0x44cedb676894FC67450D51DfE4a03e7f294605C9';
+
+const ProofOfStakeValidator = '0xCe8e536957Cc8115d7c7FE8FB1b03b4Ed32a5b20';
+const   StateManager ='0xBC0EE66Cc35B3E2732D1E6301781f0A1DDb828E7';
+const TransactionRelay = '0xcdA245B0b4e2006eb200c6F2505B2c914a379D74';
+  const ReceivingBlockchainInterface = '0xAAdeB2f7B9c7285D56A06c4aA4D91Cd5d35D1030';
+ 

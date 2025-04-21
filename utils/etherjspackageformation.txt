@@ -1,0 +1,60 @@
+Here is the list with parameters and data types:
+
+ethers
+
+- parseEther(amount: string): BigNumber
+- parseUnits(amount: string, units: string): BigNumber
+- formatEther(amount: BigNumber): string
+- formatUnits(amount: BigNumber, units: string): string
+- getContractAt(address: string, abi: Array): Contract
+- getSigner(address?: string): Signer
+- getNetwork(): Promise<Network>
+- getGasPrice(): Promise<BigNumber>
+- getTransactionCount(address: string): Promise<number>
+- getBalance(address: string): Promise<BigNumber>
+
+ethers.utils
+
+- keccak256(data: string | Array): string
+- toUtf8Bytes(data: string): Array
+- toAscii(data: string): string
+- hexlify(data: string | Array): string
+- hexStripZeros(data: string): string
+- arrayify(data: any): Array
+- concat(arrays: Array[]): Array
+- slice(array: Array, start: number, end: number): Array
+- padZeros(array: Array, length: number): Array
+
+ethers.providers
+
+- JsonRpcProvider(url: string): JsonRpcProvider
+- Web3Provider(web3: Web3): Web3Provider
+- BrowserProvider(): BrowserProvider
+- FallbackProvider(providers: Array, timeout?: number): FallbackProvider
+- StaticJsonRpcProvider(url: string, timeout?: number): StaticJsonRpcProvider
+
+ethers.Contract
+
+- deploy(abi: Array, bytecode: string, signer?: Signer, args?: Array): Promise<Contract>
+- attach(address: string, abi: Array): Contract
+- functions(): Array
+- callStatic(functionName: string, ...args: Array): Promise<BigNumber>
+- estimateGas(functionName: string, ...args: Array): Promise<BigNumber>
+- populateTransaction(functionName: string, ...args: Array): Promise<Transaction>
+
+ethers.Signer
+
+- signTransaction(transaction: Transaction): Promise<string>
+- sendTransaction(transaction: Transaction): Promise<TransactionReceipt>
+- getAddress(): string
+- getChainId(): Promise<number>
+- getGasPrice(): Promise<BigNumber>
+
+ethers.Wallet
+
+- createRandom(): Wallet
+- fromMnemonic(mnemonic: string, path?: string): Wallet
+- fromEncryptedJson(json: string, password: string): Wallet
+- fromPrivateKey(privateKey: string): Wallet
+
+Note: Some functions may have additional optional parameters or overloads, which are not included here for brevity. Also, some data types may be simplified or omitted for clarity.

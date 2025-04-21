@@ -1,0 +1,29 @@
+{
+    "CityRegister": {
+        "address": "0x17e9ddb311061ba9FA3a6ea517A934cc0D136f27"
+    },
+    "CompanyRegister": {
+        "address": "0x81aDCd0724dA5Da4b796d51c09123B53A4705D3F"
+    },
+    "CityEmissionsContract": {
+        "address": "0x723332E981Ddd2577954c0e15998e66A4929b1E8"
+    },
+    "RenewalTheoryContract": {
+        "address": "0x710CcD32bbD9b108ef3FdE8178F0E5dB94DCb478"
+    },
+    "CarbonCreditMarket": {
+        "address": "0x16F6278FBae0Fa873366628118425c34Bbb1C8c0"
+    },
+    "CityHealthCalculator": {
+        "address": "0xa87d6005E919f04324E7E351fa7d988E28C1Ef03"
+    },
+    "TemperatureRenewalContract": {
+        "address": "0xC2E69562926Ad558D982DD09238d64a60D515F48"
+    },
+    "ClimateReduction": {
+        "address": "0x3B076CD48b43d99A30C7857b37704C314C0e7171"
+    },
+    "MitigationContract": {
+        "address": "0xD78652eEe39D0bF625340a3CA0cE5696A7625d15"
+    }
+}

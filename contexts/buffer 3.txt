@@ -1,0 +1,68 @@
+async function retryOperation(operation, maxRetries = 3, delay = 2000) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`\nAttempt ${attempt} of ${maxRetries}`);
+      const result = await operation();
+      return result;
+    } catch (error) {
+      console.error(`\nAttempt ${attempt} failed with error:`, error.message);
+      
+      if (attempt === maxRetries) {
+        console.error(`\nAll ${maxRetries} attempts failed. Last error:`, error);
+        throw error;
+      } else {
+        const nextDelay = delay * attempt; // Exponential backoff
+        console.log(`\nWaiting ${nextDelay/1000} seconds before attempt ${attempt + 1}...`);
+        await new Promise(resolve => setTimeout(resolve, nextDelay));
+      }
+    }
+  }
+}
+
+async function retryOperation(operation, maxRetries = 3, delay = 2000) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`\nAttempt ${attempt} of ${maxRetries}`);
+      const result = await operation();
+      return result;
+    } catch (error) {
+      console.error(`\nAttempt ${attempt} failed with error:`, error.message);
+      
+      if (attempt === maxRetries) {
+        console.error(`\nAll ${maxRetries} attempts failed. Last error:`, error);
+        throw error;
+      } else {
+        const nextDelay = delay * attempt; // Exponential backoff
+        console.log(`\nWaiting ${nextDelay/1000} seconds before attempt ${attempt + 1}...`);
+        await new Promise(resolve => setTimeout(resolve, nextDelay));
+      }
+    }
+  }
+}
+
+
+function getWalletAddress() {
+  const PRIVATE_KEY = process.env.PRIVATE_KEY;
+  
+  if (!PRIVATE_KEY) {
+      console.error('PRIVATE_KEY not found in .env.local file');
+      process.exit(1);
+  }
+
+  try {
+      const web3 = new Web3();
+      const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
+      console.log('\nWallet Address:', account.address);
+      
+      // Create a string to append to .env.local
+      const envEntry = `\nWALLET_ADDRESS=${account.address}`;
+      
+      console.log('\nAdd this line to your .env.local file:');
+      console.log(envEntry);
+      
+  } catch (error) {
+      console.error('Error deriving wallet address:', error.message);
+  }
+}
+
+getWalletAddress();

@@ -1,0 +1,179 @@
+├── api/
+│   └── process-transaction.ts
+build/
+└── contracts/
+    ├── AccessControl.json
+    ├── AggregatorV3Interface.json
+    ├── AssetTransferProcessor.json
+    ├── BeeRoutingAlgorithm.json
+    ├── BlockchainMonitor.json
+    ├── BlockchainRegistry.json
+    ├── BlockchainRegistryBase.json
+    ├── CarbonCreditMarket.json
+    ├── ChaCha20Poly1305.json
+    ├── CityEmissionsContract.json
+    ├── CityHealthCalculator.json
+    ├── CityRegister.json
+    ├── ClimateReductionContract.json
+    ├── ClusterCommunication.json
+    ├── ClusterManager.json
+    ├── CompanyRegister.json
+    ├── ConfidenceScoreCalculator.json
+    ├── Context.json
+    ├── Counters.json
+    ├── ERC165.json
+    ├── ERC20.json
+    ├── FixedPointMath.json
+    ├── IAccessControl.json
+    ├── ICreditMarketContract.json
+    ├── IERC165.json
+    ├── IERC20.json
+    ├── IERC20Metadata.json
+    ├── IRewardCalculator.json
+    ├── IUncertaintyAnalytics.json
+    ├── IUniswapV2Router01.json
+    ├── IUniswapV2Router02.json
+    ├── IZKPVerifier.json
+    ├── Math.json
+    ├── MerkleTreeLib.json
+    ├── MetadataParser.json
+    ├── MitigationContract.json
+    ├── NodeTypes.json
+    ├── Ownable.json
+    ├── PacechainChannel.json
+    ├── PasschainValidator.json
+    ├── Pausable.json
+    ├── ProofGenerator.json
+    ├── ProofOfStakeValidator.json
+    ├── ReceivingBlockchainInterface.json
+    ├── ReentrancyGuard.json
+    ├── RelayTypes.json
+    ├── RenewalTheoryContract.json
+    ├── RequestManager.json
+    ├── ResponseManager.json
+    ├── RewardBase.json
+    ├── RewardCalculator.json
+    ├── RewardDistributor.json
+    ├── RewardToken.json
+    ├── SafeMath.json
+    ├── SignedMath.json
+    ├── SpeculativeTransactionHandler.json
+    ├── StateManager.json
+    ├── Strings.json
+    ├── TemperatureRenewalContract.json
+    ├── TransactionRelay.json
+    ├── TransactionTypes.json
+    ├── TransactionValidator.json
+    ├── UncertaintyAnalytics.json
+    └── ZKPVerifierBase.json
+├── components/
+│   ├── BlockchainContext.tsx
+│   ├── ClientInit.tsx
+│   ├── GlobalErrorHandler.tsx
+│   ├── PerformanceMetrics.tsx
+│   └── TransactionForm.tsx
+│
+├── config/
+│   ├── contract_addresses.json
+│   ├── network_config.d.ts
+│   ├── network_config.js
+│   └── tatum-config.ts
+│
+├── contexts/
+│   └── TransactionContext.tsx
+│
+├── constants/
+│   └── constants.js
+│
+├── contracts/
+│   ├── RequestManager.sol
+│   ├── ResponseManager.sol
+│   ├── UncertaintyAnalytics.sol
+│   │
+│   ├── blockchain/
+│   │   ├── BlockchainRegistryBase.sol
+│   │   ├── ChaCha20Poly1305.sol
+│   │   ├── CityEmissionsContract.sol
+│   │   ├── CityHealthCalculator.sol
+│   │   ├── CityRegister.sol
+│   │   ├── CompanyRegister.sol
+│   │   ├── MitigationContract.sol
+│   │   ├── RenewalTheoryContract.sol
+│   │   └── TemperatureRenewalContract.sol
+│   │
+│   ├── passchain/
+│   │   ├── ClusterManager.sol
+│   │   ├── MetadataParser.sol
+│   │   ├── PacechainChannel.sol
+│   │   ├── RewardCalculator.sol
+│   │   ├── RewardToken.sol
+│   │   └── ZKPVerifierBase.sol
+│   │
+│   └── relay/
+│       └── RelayChain.sol
+├── data/
+│   └── carbonmonitor-cities_datas_2025-01-13.csv
+├── interfaces/
+│   └── IUncertaintyAnalytics.sol
+│
+├── library/
+│   ├── FixedPointMath.sol
+│   └── TransactionTypes.sol
+│
+├── migrations/
+│   ├── 1_initial_migration.js
+│   ├── 2_deploy_contracts.js
+│   └── (multiple initial migration files)
+│
+├── pages/
+│   ├── index.tsx
+│   ├── _app.tsx
+│   └── transactions/
+│       └── index.tsx
+├── python/
+│   ├── blockchainworkflow.py
+│   ├── climatemodule.py
+│   ├── companymodule.py
+│   ├── emmissionsmodule.py
+│   ├── healthmodule.py
+│   ├── renewalmodule.py
+│   └── setup_blockchain.ipynb
+├── scripts/
+│   ├── deploy_ethereum.js
+│   ├── deploy_polkadot.js
+│   └── measure_performance.js
+│
+├── services/
+│   ├── blockchain-service.ts
+│   ├── contract-interactions.ts
+│   ├── cross-chain-service.ts
+│   ├── tatum-blockchain-service.ts
+│   └── transaction-processor.ts
+│
+├── test/
+│   ├── blockchain_registry_test.js
+│   ├── climateintegration_test.js
+│   ├── passchain_flow_test.js
+│   ├── relay_chain_test.js
+│   ├── uncertaintyanalytics_test.js
+│   ├── uncertaintytest1.txt
+│   └── uncertaintytest2.txt
+│
+└── utils/
+    ├── contract-loader.ts
+    ├── logger.ts
+    ├── performance-tracker.ts
+    └── web3-config.ts
+
+
+.eslintrc.json
+deployment-script.js
+global.d.ts
+next-env.d.ts
+next.config.js
+package-config.json
+package-lock.json
+package.json
+truffle-config.js
+tsconfig.json
+yarn.lock

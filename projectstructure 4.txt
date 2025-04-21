@@ -1,0 +1,136 @@
+huaxi-blockchain/
+│
+├── components/
+│   ├── AppLayout/
+│   │   ├── AppLayout.tsx
+│   │   └── index.ts
+│   │
+│   ├── LogViewer/
+│   │   ├── LogViewer.tsx
+│   │   └── index.ts
+│   │
+│   ├── PatientRequestForm/
+│   │   ├── PatientRequestForm.tsx
+│   │   └── index.ts
+│   │
+│   ├── PatientRequestList/
+│   │   ├── PatientRequestList.tsx
+│   │   └── index.ts
+│   │
+│   └── PatientStatusList/
+│       ├── PatientStatusList.tsx
+│       └── index.ts
+│
+├── config/
+│   ├── appointment_config.ts
+│   ├── contract_addresses.json
+│   ├── network_config.d.ts
+│   ├── network_config.js
+│   ├── queryClient.ts
+│   ├── supported_network.ts
+│   ├── supported_networks.js
+│   ├── tatum-config.ts
+│   └── types.d.ts
+│
+├── constants/
+│   ├── abi.ts
+│   ├── constants.js
+│   ├── constants.ts
+│   ├── dummyData.ts
+│   ├── module.ts
+│   ├── shortenAddress.ts
+│   ├── supportedChains.ts
+│   ├── supportedNetworkOptions.ts
+│   └── Transactions.json
+│
+├── contexts/
+│   ├── buffer 2.txt
+│   ├── buffer 3.txt
+│   ├── buffertext.txt
+│   └── PatientDoctorContext.tsx
+│
+├── contracts/
+│   ├── ERC20.sol
+│   └── HospitalCoin.sol
+│
+├── data/
+│   └── carbonmonitor-cities_datas_2025-01-13.csv
+│
+├── database/
+│   ├── connectDB.js
+│   └── ConnectDB.ts
+│
+├── deploy/
+│   ├── deploy.js
+│   ├── FileTokenDeploy.js
+│   ├── filetokenupdeployupgradeable.js
+│   └── gnosisafedeploy.ts
+│
+├── ganache-cli/
+│   ├── args.js
+│   ├── cli.js
+│   ├── LICENSE
+│   ├── package.json
+│   ├── README.md
+│   ├── build/
+│   │   ├── ganache-core.node.cli.js
+│   │   └── ganache-core.node.cli.js.map
+│   ├── resources/
+│   │   └── icons/
+│   │       ├── ganache-cli-128x128.png
+│   │       └── ganache-cli.svg
+│   └── scripts/
+│       └── generate-otp.js
+│
+├── ganache-core/
+│   [Directory structure unchanged]
+│
+├── hooks/
+│   ├── eventlogs.ts
+│   ├── index.ts
+│   ├── useAppToast.ts
+│   ├── useEthers.ts
+│   └── useFetch.ts
+│
+├├── images/
+│   └── blockdaologo.png
+│
+├── interfaces/
+│   [Directory structure unchanged]
+│
+├── library/
+│   [Directory structure unchanged]
+│
+├── pages/
+│   ├── error.tsx
+│   ├── globals.css
+│   ├── index.tsx
+│   ├── protected.js
+│   ├── _app.tsx
+│   ├── _document.tsx
+│   └── api/
+│       ├── auth/
+│       │   ├── new-user.tsx
+│       │   ├── signin.tsx
+│       │   ├── signout.tsx
+│       │   ├── signup.tsx
+│       │   ├── verify-request.tsx
+│       │   └── [...nextauth].ts
+│       ├── doctordashboard/
+│       │   ├── doctordashboard.tsx
+│       │   ├── index.ts
+│       │   └── welcome.tsx
+│       ├── patientinteractionpage/
+│       │   ├── index.ts
+│       │   ├── patientinteractionpage.tsx
+│       │   └── welcome.tsx
+│       ├── theme/
+│       │   ├── index.ts
+│       │   └── theme.tsx
+│       └── transactions/
+│           └── process-transaction.ts
+│
+├── package.json
+├── next.config.js
+├── tsconfig.json
+└── README.md

@@ -1,0 +1,30 @@
+// Project Structure
+crosschain-passchain/
+├── contracts/
+│   ├── blockchain/
+│   │   ├── BlockchainRegistryBase.sol
+│   │   └── ChaCha20Poly1305.sol
+│   ├── passchain/
+│   │   ├── MetadataParser.sol
+│   │   ├── PacechainChannel.sol
+│   │   ├── ClusterManager.sol
+│   │   ├── ZKPVerifierBase.sol
+│   │   └── RewardCalculator.sol
+│   └── relay/
+│       └── RelayChain.sol
+├── migrations/
+│   ├── 1_initial_migration.js
+│   └── 2_deploy_contracts.js
+├── test/
+│   ├── blockchain_registry_test.js
+│   ├── passchain_flow_test.js
+│   └── relay_chain_test.js
+├── scripts/
+│   ├── measure_performance.js
+│   ├── deploy_ethereum.js
+│   └── deploy_polkadot.js
+├── config/
+│   ├── network_config.js
+│   └── contract_addresses.json
+├── package.json
+└── truffle-config.js

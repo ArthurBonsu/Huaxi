@@ -1,0 +1,555 @@
+require('dotenv').config({ path: '.env.local' });
+const Web3 = require('web3');
+const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
+const glob = require('glob');
+const web3 = new Web3();
+
+
+// Environment variables
+const NEXT_PUBLIC_TATUM_API_KEY = process.env.NEXT_PUBLIC_TATUM_API_KEY;
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const INFURA_URL = process.env.ETHEREUM_PROVIDER_URL;
+const CHAIN_ID = 11155111; // Sepolia chain ID
+const CHAIN = 'ethereum-sepolia'; // This corresponds to the {CHAIN} part in the URL
+
+// Modified provider configuration
+const providers = [
+  {
+    url: INFURA_URL,
+    name: 'Infura',
+    chainId: CHAIN_ID,
+    minBalance: '0.1',
+    retryAttempts: 3,
+    timeout: 30000,
+    headers: {}
+  },
+  {
+    url: `https://${CHAIN}.gateway.tatum.io`,  // Modified URL format
+    name: 'Tatum',
+    chainId: CHAIN_ID,
+    minBalance: '0.1',
+    retryAttempts: 3,
+    timeout: 30000,
+    headers: {
+      'x-api-key': NEXT_PUBLIC_TATUM_API_KEY
+    }
+  }
+];
+function getWalletAddress() {
+  const PRIVATE_KEY = process.env.PRIVATE_KEY;
+  
+  if (!PRIVATE_KEY) {
+      console.error('PRIVATE_KEY not found in .env.local file');
+      process.exit(1);
+  }
+
+  try {
+      const web3 = new Web3();
+      const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
+      console.log('\nWallet Address:', account.address);
+      
+      // Create a string to append to .env.local
+      const envEntry = `\nWALLET_ADDRESS=${account.address}`;
+      
+      console.log('\nAdd this line to your .env.local file:');
+      console.log(envEntry);
+      
+  } catch (error) {
+      console.error('Error deriving wallet address:', error.message);
+  }
+}
+
+getWalletAddress();
+
+async function retryOperation(operation, maxRetries = 3, delay = 2000) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`\nAttempt ${attempt} of ${maxRetries}`);
+      const result = await operation();
+      return result;
+    } catch (error) {
+      console.error(`\nAttempt ${attempt} failed with error:`, error.message);
+      
+      if (attempt === maxRetries) {
+        console.error(`\nAll ${maxRetries} attempts failed. Last error:`, error);
+        throw error;
+      } else {
+        const nextDelay = delay * attempt; // Exponential backoff
+        console.log(`\nWaiting ${nextDelay/1000} seconds before attempt ${attempt + 1}...`);
+        await new Promise(resolve => setTimeout(resolve, nextDelay));
+      }
+    }
+  }
+}
+
+
+async function getWeb3Provider() {
+  if (!PRIVATE_KEY) {
+    throw new Error('Private key not found in environment variables');
+  }
+
+  console.log('\nStarting provider connection attempts...');
+  
+  // Validate private key format
+  if (!PRIVATE_KEY.startsWith('0x')) {
+    console.log('Adding 0x prefix to private key...');
+    PRIVATE_KEY = '0x' + PRIVATE_KEY;
+  }
+
+  // Create account outside the provider loop to verify it's consistent
+  const tempWeb3 = new Web3();
+  const account = tempWeb3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
+  console.log('Wallet address to check:', account.address);
+
+  for (const provider of providers) {
+    try {
+      console.log(`\nTrying ${provider.name} provider...`);
+      console.log(`URL: ${provider.url}`);
+
+      let web3Provider;
+      if (provider.name === 'Tatum') {
+        console.log('Setting up Tatum provider with headers...');
+        web3Provider = new Web3.providers.HttpProvider(provider.url, {
+          timeout: provider.timeout,
+          headers: [
+            {
+              name: 'x-api-key',
+              value: NEXT_PUBLIC_TATUM_API_KEY
+            }
+          ]
+        });
+      } else {
+        console.log('Setting up standard provider...');
+        web3Provider = new Web3.providers.HttpProvider(provider.url);
+      }
+
+      const web3 = new Web3(web3Provider);
+      
+      // Verify network connection
+      console.log('Testing basic connection...');
+      const networkId = await web3.eth.net.getId();
+      console.log(`Connected to network ID: ${networkId}`);
+      
+      if (networkId !== CHAIN_ID) {
+        console.log(`Warning: Expected chain ID ${CHAIN_ID}, but got ${networkId}`);
+        continue;
+      }
+
+      // Add account to wallet
+      console.log('Adding account to wallet...');
+      web3.eth.accounts.wallet.add(account);
+      web3.eth.defaultAccount = account.address;
+
+      // Enhanced balance checking
+      try {
+        console.log('Checking balance...');
+        const balance = await web3.eth.getBalance(account.address);
+        const balanceInWei = BigInt(balance);
+        const balanceInEth = web3.utils.fromWei(balance, 'ether');
+        
+        console.log(`Connected to ${provider.name}`);
+        console.log(`Balance in Wei: ${balanceInWei}`);
+        console.log(`Balance in ETH: ${balanceInEth}`);
+        
+        // Verify the balance retrieval worked correctly
+        const secondCheck = await web3.eth.getBalance(account.address);
+        if (secondCheck !== balance) {
+          console.warn('Warning: Inconsistent balance readings');
+        }
+
+        // Debug info
+        console.log('Debug - Latest block:', await web3.eth.getBlockNumber());
+        
+        if (parseFloat(balanceInEth) >= parseFloat(provider.minBalance)) {
+          console.log(`${provider.name} provider selected with sufficient balance`);
+          return { web3, provider: web3Provider };
+        }
+        
+        console.log(`Insufficient balance on ${provider.name} (${balanceInEth} < ${provider.minBalance})`);
+        
+        // If we have a connection but insufficient balance, throw specific error
+        if (parseFloat(balanceInEth) === 0) {
+          throw new Error(`Account needs to be funded with at least ${provider.minBalance} ETH on Sepolia testnet`);
+        }
+      } catch (balanceError) {
+        console.error(`Error checking balance on ${provider.name}:`, balanceError.message);
+        throw balanceError;
+      }
+    } catch (error) {
+      console.error(`Error with ${provider.name}:`, error.message);
+      if (error.message.includes('needs to be funded')) {
+        throw error; // Propagate funding errors
+      }
+    }
+  }
+
+  throw new Error('No viable provider found. Please ensure your account is funded on Sepolia testnet');
+}
+
+// Helper function to verify account balance on multiple providers
+async function verifyBalance(address) {
+  console.log('\nVerifying balance across providers...');
+  
+  const results = [];
+  
+  for (const provider of providers) {
+    try {
+      const web3 = new Web3(new Web3.providers.HttpProvider(provider.url));
+      const balance = await web3.eth.getBalance(address);
+      const balanceInEth = web3.utils.fromWei(balance, 'ether');
+      results.push({
+        provider: provider.name,
+        balance: balanceInEth
+      });
+    } catch (error) {
+      console.error(`Failed to check balance on ${provider.name}:`, error.message);
+    }
+  }
+  
+  return results;
+}
+
+// Modified connection test function
+async function testTatumConnection() {
+  try {
+    const headers = {
+      'x-api-key': NEXT_PUBLIC_TATUM_API_KEY,
+      'Content-Type': 'application/json'
+    };
+
+    // Try multiple endpoints
+    const endpoints = [
+      `https://${CHAIN}.gateway.tatum.io`,
+      `https://api-${CHAIN}.tatum.io/v3/blockchain/node`
+    ];
+
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`Testing connection to ${endpoint}...`);
+        const response = await axios.post(
+          endpoint,
+          {
+            jsonrpc: '2.0',
+            method: 'eth_blockNumber',
+            params: [],
+            id: 1
+          },
+          { headers }
+        );
+
+        if (response.data && response.data.result) {
+          console.log('Tatum connection successful. Latest block:', 
+            parseInt(response.data.result, 16));
+          return true;
+        }
+      } catch (endpointError) {
+        console.log(`Failed to connect to ${endpoint}:`, endpointError.message);
+      }
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('All Tatum connection attempts failed:', error.message);
+    return false;
+  }
+}
+
+// Also, let's add a debug mode to the deployContract function:
+async function deployContract(contractName, abi, bytecode) {
+  console.log(`\nStarting deployment for ${contractName}`);
+  
+  return retryOperation(async () => {
+    console.log('\nGetting Web3 provider...');
+    const { web3, provider } = await getWeb3Provider();
+    const accounts = await web3.eth.getAccounts();
+    
+    console.log('Accounts available:', accounts);
+    
+    try {
+      console.log('Creating contract instance...');
+      const contract = new web3.eth.Contract(abi);
+      
+      console.log('Estimating gas...');
+      const gasEstimate = await contract.deploy({ data: bytecode })
+        .estimateGas({ from: accounts[0] });
+      
+      console.log('Getting gas price...');
+      const gasPrice = await web3.eth.getGasPrice();
+      const totalCost = web3.utils.fromWei(
+        (BigInt(gasEstimate) * BigInt(gasPrice)).toString(),
+        'ether'
+      );
+      
+      console.log(`Deployment cost estimate: ${totalCost} ETH`);
+      
+      console.log('Deploying contract...');
+      const deployedContract = await contract
+        .deploy({ data: bytecode })
+        .send({ 
+          from: accounts[0],
+          gas: Math.floor(gasEstimate * 1.2)
+        });
+      
+      console.log('Contract deployed successfully');
+      return {
+        address: deployedContract.options.address,
+        transactionHash: deployedContract.transactionHash
+      };
+    } catch (error) {
+      console.error('Deployment error:', error);
+      throw error;
+    } finally {
+      if (provider && provider.engine) {
+        console.log('Stopping provider engine...');
+        await new Promise((resolve) => {
+          provider.engine.stop();
+          resolve();
+        });
+      }
+    }
+  }, 3, 5000);
+}
+
+
+
+async function verifyContract(contractAddress, contractName, contractSource, compilerVersion = 'v0.8.19') {
+  if (!ETHERSCAN_API_KEY) {
+    throw new Error('ETHERSCAN_API_KEY not found in environment variables');
+  }
+
+  try {
+    const response = await axios.post('https://api-sepolia.etherscan.io/api', null, {
+      params: {
+        module: 'contract',
+        action: 'verifysourcecode',
+        apikey: ETHERSCAN_API_KEY,
+        contractaddress: contractAddress,
+        sourceCode: contractSource,
+        codeformat: 'solidity-single-file',
+        contractname: contractName,
+        compilerversion: compilerVersion,
+        optimizationUsed: 1
+      }
+    });
+
+    if (response.data.status !== '1') {
+      throw new Error(`Contract verification failed: ${response.data.result}`);
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error(`Verification error for ${contractName}:`, error);
+    throw error;
+  }
+}
+
+async function deployContract(contractName, abi, bytecode) {
+  return retryOperation(async () => {
+    const { web3, provider } = await getWeb3Provider();
+    const accounts = await web3.eth.getAccounts();
+    
+    try {
+      const contract = new web3.eth.Contract(abi);
+      
+      console.log(`Estimating gas for ${contractName}...`);
+      const gasEstimate = await contract.deploy({ data: bytecode })
+        .estimateGas({ from: accounts[0] });
+      
+      const gasPrice = await web3.eth.getGasPrice();
+      const totalCost = web3.utils.fromWei(
+        (BigInt(gasEstimate) * BigInt(gasPrice)).toString(),
+        'ether'
+      );
+      
+      console.log(`Estimated deployment cost for ${contractName}: ${totalCost} ETH`);
+      
+      console.log(`Deploying ${contractName}...`);
+      const deployedContract = await contract
+        .deploy({ data: bytecode })
+        .send({ 
+          from: accounts[0],
+          gas: Math.floor(gasEstimate * 1.2)
+        });
+      
+      console.log(`${contractName} deployed to:`, deployedContract.options.address);
+      
+      return {
+        address: deployedContract.options.address,
+        transactionHash: deployedContract.transactionHash
+      };
+    } catch (error) {
+      console.error(`Deployment error for ${contractName}:`, error);
+      throw error;
+    } finally {
+      if (provider && provider.engine) {
+        await new Promise((resolve) => {
+          provider.engine.stop();
+          resolve();
+        });
+      }
+    }
+  }, 3, 5000);
+}
+
+async function deployAllContracts() {
+  console.log('Starting contract deployment...');
+  
+  const contractsDir = path.join(__dirname, '../contracts');
+  const buildContractsDir = path.join(__dirname, '../build/contracts');
+  const addressesPath = path.join(__dirname, '../config/contract_addresses.json');
+  
+  // Ensure directories exist
+  if (!fs.existsSync(buildContractsDir)) {
+    throw new Error('Build directory not found. Please compile contracts first.');
+  }
+  
+  // Read or create addresses file
+  let existingAddresses = {};
+  try {
+    existingAddresses = JSON.parse(fs.readFileSync(addressesPath, 'utf8'));
+  } catch (error) {
+    console.log('No existing addresses file found. Creating new one.');
+  }
+  
+  const deployedContracts = {};
+  
+  const contractFiles = fs.readdirSync(buildContractsDir)
+    .filter(f => f.endsWith('.json') && !f.includes('Metadata'));
+  
+  for (const file of contractFiles) {
+    const contractName = path.basename(file, '.json');
+    console.log(`Processing ${contractName}...`);
+    
+    try {
+      const contractPath = path.join(buildContractsDir, file);
+      const contractData = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
+      
+      const existingAddress = existingAddresses[contractName]?.address;
+      
+      const deploymentResult = await deployContract(
+        contractName, 
+        contractData.abi, 
+        contractData.bytecode
+      );
+      
+      const sourceCodePath = path.join(contractsDir, `**/${contractName}.sol`);
+      const sourceCodes = glob.sync(sourceCodePath);
+      
+      if (sourceCodes.length > 0) {
+        const sourceCode = fs.readFileSync(sourceCodes[0], 'utf8');
+        console.log(`Verifying ${contractName}...`);
+        
+        const verificationResult = await verifyContract(
+          deploymentResult.address,
+          contractName,
+          sourceCode
+        );
+        
+        deployedContracts[contractName] = {
+          address: deploymentResult.address,
+          abi: `${contractName}.json`,
+          transactionHash: deploymentResult.transactionHash,
+          verificationStatus: verificationResult,
+          previousAddress: existingAddress
+        };
+        
+        console.log(`${contractName} deployed and verified successfully`);
+      }
+    } catch (error) {
+      console.error(`Failed to deploy and verify ${contractName}:`, error);
+      // Continue with other contracts even if one fails
+    }
+  }
+  
+  const updatedAddresses = {
+    ...existingAddresses,
+    ...Object.fromEntries(
+      Object.entries(deployedContracts).map(([name, contract]) => [
+        name,
+        {
+          address: contract.address,
+          abi: contract.abi,
+          previousAddress: contract.previousAddress
+        }
+      ])
+    )
+  };
+  
+  // Ensure config directory exists
+  const configDir = path.dirname(addressesPath);
+  if (!fs.existsSync(configDir)) {
+    fs.mkdirSync(configDir, { recursive: true });
+  }
+  
+  fs.writeFileSync(addressesPath, JSON.stringify(updatedAddresses, null, 2));
+  
+  console.log('Contracts deployed and addresses updated:', deployedContracts);
+  return deployedContracts;
+}
+
+// Main execution
+if (require.main === module) {
+  // Process-level unhandled rejection handler
+  process.on('unhandledRejection', (error) => {
+    console.error('Unhandled promise rejection:', error);
+    process.exit(1);
+  });
+
+  // Validate required environment variables
+  const requiredEnvVars = {
+    'NEXT_PUBLIC_TATUM_API_KEY': NEXT_PUBLIC_TATUM_API_KEY,
+    'PRIVATE_KEY': PRIVATE_KEY,
+    'ETHERSCAN_API_KEY': ETHERSCAN_API_KEY
+  };
+
+  const missingEnvVars = Object.entries(requiredEnvVars)
+    .filter(([_, value]) => !value)
+    .map(([key]) => key);
+
+  if (missingEnvVars.length > 0) {
+    console.error('Missing required environment variables:', missingEnvVars.join(', '));
+    process.exit(1);
+  }
+
+  // Add timeout for the entire deployment process
+  const deploymentTimeout = setTimeout(() => {
+    console.error('Deployment timed out after 5 minutes');
+    process.exit(1);
+  }, 300000); // 5 minutes
+
+  testTatumConnection()
+    .then(result => {
+      if (result) {
+        console.log('Tatum connection test passed. Proceeding with deployment...');
+        return deployAllContracts();
+      } else {
+        console.log('Tatum connection test failed. Please check your configuration.');
+        process.exit(1);
+      }
+    })
+    .then(() => {
+      clearTimeout(deploymentTimeout);
+      console.log('Deployment completed successfully');
+      process.exit(0);
+    })
+    .catch(error => {
+      clearTimeout(deploymentTimeout);
+      console.error('Deployment failed:', {
+        message: error.message,
+        stack: error.stack,
+        details: error.details || 'No additional details'
+      });
+      process.exit(1);
+    });
+}
+
+module.exports = {
+  deployContract,
+  deployAllContracts,
+  verifyContract,
+  getWeb3Provider,
+  testTatumConnection
+};

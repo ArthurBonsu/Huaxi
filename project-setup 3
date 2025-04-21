@@ -1,0 +1,612 @@
+# Blockchain Services Platform - Complete Project Tree
+
+```
+└── Blockchain Services Platform
+     ├── build/
+     │   └── contracts/
+     │       ├── AccessControl.json
+     │       ├── AggregatorV3Interface.json
+     │       ├── AssetTransferProcessor.json
+     │       ├── BeeRoutingAlgorithm.json
+     │       ├── BlockchainMonitor.json
+     │       ├── BlockchainRegistry.json
+     │       ├── BlockchainRegistryBase.json
+     │       ├── BlockchainServiceToken.json
+     │       ├── CarbonCreditMarket.json
+     │       ├── ChaCha20Poly1305.json
+     │       ├── CityEmissionsContract.json
+     │       ├── CityHealthCalculator.json
+     │       ├── CityRegister.json
+     │       ├── ClimateReductionContract.json
+     │       ├── ClusterCommunication.json
+     │       ├── ClusterManager.json
+     │       ├── CompanyRegister.json
+     │       ├── ConfidenceScoreCalculator.json
+     │       ├── Context.json
+     │       ├── Counters.json
+     │       ├── ElectricityPaymentContract.json
+     │       ├── ERC165.json
+     │       ├── ERC20.json
+     │       ├── FixedPointMath.json
+     │       ├── IAccessControl.json
+     │       ├── ICreditMarketContract.json
+     │       ├── IERC165.json
+     │       ├── IERC20.json
+     │       ├── IERC20Metadata.json
+     │       ├── IRewardCalculator.json
+     │       ├── IUncertaintyAnalytics.json
+     │       ├── IUniswapV2Router01.json
+     │       ├── IUniswapV2Router02.json
+     │       ├── IZKPVerifier.json
+     │       ├── Math.json
+     │       ├── MerkleTreeLib.json
+     │       ├── MetadataParser.json
+     │       ├── MitigationContract.json
+     │       ├── NodeTypes.json
+     │       ├── Ownable.json
+     │       ├── PacechainChannel.json
+     │       ├── PasschainValidator.json
+     │       ├── Pausable.json
+     │       ├── ProofGenerator.json
+     │       ├── ProofOfStakeValidator.json
+     │       ├── ReceivingBlockchainInterface.json
+     │       ├── ReentrancyGuard.json
+     │       ├── RelayTypes.json
+     │       ├── RenewalTheoryContract.json
+     │       ├── RequestManager.json
+     │       ├── ResponseManager.json
+     │       ├── RewardBase.json
+     │       ├── RewardCalculator.json
+     │       ├── RewardDistributor.json
+     │       ├── RewardToken.json
+     │       ├── SafeMath.json
+     │       ├── SignedMath.json
+     │       ├── SpeculativeTransactionHandler.json
+     │       ├── StateManager.json
+     │       ├── Strings.json
+     │       ├── TemperatureRenewalContract.json
+     │       ├── TransactionRelay.json
+     │       ├── TransactionTypes.json
+     │       ├── TransactionValidator.json
+     │       ├── UncertaintyAnalytics.json
+     │       └── ZKPVerifierBase.json
+     │
+       ├── components/
+     │   ├── AppSignIn.tsx
+     │   ├── ClientInit.tsx
+     │   ├── GlobalErrorHandler.tsx
+     │   ├── MetaTags.tsx
+     │   ├── PageSelection.tsx
+     │   ├── PerformanceMetrics.tsx
+     │   ├── ServiceWrapper.tsx
+     │   ├── TransactionForm.tsx
+     │   ├── AddSafeOwners/
+     │   │   ├── AddSafeOwners.tsx
+     │   │   └── index.ts
+     │   ├── AppAlertDialog/
+     │   │   ├── AppAlertDialog.tsx
+     │   │   └── index.ts
+     │   ├── AppModal/
+     │   │   ├── AppModal.tsx
+     │   │   └── index.ts
+     │   ├── ApproveTransfer/
+     │   │   ├── ApproveTransfer.tsx
+     │   │   └── index.ts
+     │   ├── AppSidebar/
+     │   │   ├── AppSidebar.tsx
+     │   │   ├── index.tsx
+     │   │   └── MenuItem.tsx
+     │   ├── AppSignUp/
+     │   │   ├── AppSignup.tsx
+     │   │   └── index.ts
+     │   ├── CreateSafe/
+     │   │   ├── CreateSafe.tsx
+     │   │   └── index.ts
+     │   ├── CrowdSource/
+     │   │   ├── CrowdSource.tsx
+     │   │   └── index.tsx
+     │   ├── CSV/
+     │   │   ├── CSV.tsx
+     │   │   └── index.ts
+     │   ├── DAO/
+     │   │   ├── DAO.tsx
+     │   │   └── index.ts
+     │   ├── ElectricityPayment/
+     │   │   ├── ElectricityPayment.tsx
+     │   │   └── index.ts
+     │   ├── Energy/
+     │   │   ├── Energy.tsx
+     │   │   └── index.ts
+     │   ├── ExecuteTransfer/
+     │   │   ├── ExecuteTransfer.tsx
+     │   │   └── index.ts
+     │   ├── Footer/
+     │   │   ├── Footer.tsx
+     │   │   └── index.ts
+     │   ├── LandOwnership/
+     │   │   ├── index.tsx
+     │   │   └── LandOwnership.tsx
+     │   ├── Layout/
+     │   │   ├── BasicAuth.tsx
+     │   │   ├── index.tsx
+     │   │   └── Layout.tsx
+     │   ├── Loader/
+     │   │   ├── index.ts
+     │   │   └── Loader.tsx
+     │   ├── LoadSafeTransfer/
+     │   │   ├── index.ts
+     │   │   └── LoadSafeTransfer.tsx
+     │   ├── NavBar/
+     │   │   ├── index.ts
+     │   │   └── NavBar.tsx
+     │   ├── PaymentTransfer/
+     │   │   ├── index.ts
+     │   │   └── PaymentTransfer.tsx
+     │   ├── PortfolioContract/
+     │   │   ├── index.ts
+     │   │   └── PortfolioContract.tsx
+     │   ├── ProposeTransfer/
+     │   │   ├── CreateTransferForm.tsx
+     │   │   ├── index.ts
+     │   │   └── ProposeTransfer.tsx
+     │   ├── RejectTransfer/
+     │   │   ├── index.ts
+     │   │   └── RejectTransfer.tsx
+     │   ├── SecuredSwap.tsx/
+     │   │   ├── index.ts
+     │   │   └── SecuredSwap.tsx
+     │   ├── Services/
+     │   │   ├── index.ts
+     │   │   └── Services.tsx
+     │   ├── SimpleTransfer/
+     │   │   ├── index.ts
+     │   │   └── SimpleTransfer.tsx
+     │   ├── SwapTransfer/
+     │   │   ├── index.ts
+     │   │   └── SwapTransfer.tsx
+     │   ├── Transaction/
+     │   │   ├── Transaction.tsx
+     │   │   └── index.ts
+     │   └── TransferConfirmation/
+     │       ├── TransferConfirmation.tsx
+     │       └── index.ts
+     │
+     ├── config/
+     │   ├── contract_addresses.json
+     │   ├── network_config.d.ts
+     │   ├── network_config.js
+     │   ├── queryClient.ts
+     │   └── tatum-config.ts
+     │
+     ├── constants/
+     │   ├── abi.ts
+     │   ├── constants.js
+     │   ├── constants.ts
+     │   ├── dummyData.ts
+     │   ├── module.ts
+     │   ├── shortenAddress.ts
+     │   ├── supportedChains.ts
+     │   ├── supportedNetworkOptions.ts
+     │   └── Transactions.json
+     │
+   ├── contexts/
+     │   ├── BlockchainContext.tsx
+     │   ├── buffer2.txt
+     │   ├── buffer3.txt
+     │   ├── buffertext.txt
+     │   ├── CrowdSourceContext.tsx
+     │   ├── DaoContext.tsx
+     │   ├── ElectricityPaymentContext.tsx
+     │   ├── LandOwnershipContext.tsx
+     │   ├── useCrowdsourceContext.tsx
+     │   ├── useDaoContext.tsx
+     │   ├── useElectricityPaymentContext.tsx
+     │   ├── useLandOwnership.tsx
+     │   ├── usePortfolioContext.tsx
+     │   ├── useSafeContext.tsx
+     │   ├── useSwapContext.tsx
+     │   ├── useTokenContext.tsx
+     │   └── useTransactionContext.tsx
+     ├ ├── contracts/
+     │   ├── BlockchainServicesCoin.sol
+     │   ├── CrowdSource.sol
+     │   ├── DAO.sol
+     │   ├── ElectricityPaymentContract.sol
+     │   ├── ERC20.sol
+     │   ├── FileToken.sol
+     │   ├── FileTokenUpgradeable.sol
+     │   ├── FileTokenUpgradeableV2.sol
+     │   ├── final_predictive_contracts.txt
+     │   ├── GnosisSafeGetAddresses.sol
+     │   ├── Greeter.sol
+     │   ├── LandOwnership.sol
+     │   ├── MultiEnergyToken.sol
+     │   ├── MultiSigWallet.sol
+     │   ├── PortfolioContract.sol
+     │   ├── RequestManager.sol
+     │   ├── ResponseManager.sol
+     │   ├── SafeContracts.sol
+     │   ├── SwapContract.sol
+     │   ├── TransactionContract.sol
+     │   ├── UncertaintyAnalytics.sol
+     │   ├── blockchain/
+     │   ├── climate/
+     │   ├── passchain/
+     │   └── relay/
+     │   ├── climate/
+     │   │   ├── BlockchainWorkflow
+     │   │   ├── CityEmissionsContract.sol
+     │   │   ├── CityHealthCalculator.sol
+     │   │   ├── CityRegister.sol
+     │   │   ├── CompanyRegister.sol
+     │   │   ├── MitigationContract.sol
+     │   │   ├── RenewalTheoryContract.sol
+     │   │   └── TemperatureRenewalContract.sol
+     │   ├── passchain/
+     │   │   ├── ClusterManager.sol
+     │   │   ├── MetadataParser.sol
+     │   │   ├── PacechainChannel.sol
+     │   │   ├── RewardCalculator.sol
+     │   │   ├── RewardToken.sol
+     │   │   └── ZKPVerifierBase.sol
+     │   └── relay/
+     │       └── RelayChain.sol
+     │
+     ├── data/
+     │   └── carbonmonitor-cities_datas_2025-01-13.csv
+     │
+     ├── database/
+     │   ├── connectDB.js
+     │   └── ConnectDB.ts
+     │
+     ├── deploy/
+     │   ├── deploy.js
+     │   ├── FileTokenDeploy.js
+     │   ├── filetokenupdeployupgradeable.js
+     │   └── gnosisafedeploy.ts
+     │
+     ├── ganache-cli/
+     │   ├── args.js
+     │   ├── cli.js
+     │   ├── LICENSE
+     │   ├── package.json
+     │   ├── README.md
+     │   ├── build/
+     │   │   ├── ganache-core.node.cli.js
+     │   │   └── ganache-core.node.cli.js.map
+     │   ├── resources/
+     │   │   └── icons/
+     │   │       ├── ganache-cli-128x128.png
+     │   │       └── ganache-cli.svg
+     │   └── scripts/
+     │       └── generate-otp.js
+     │
+     ├── ganache-core/
+     │   ├── index.js
+     │   ├── LICENSE
+     │   ├── npm-shrinkwrap.json
+     │   ├── package.json
+     │   ├── public-exports.js
+     │   ├── README.md
+     │   ├── .nyc_output/
+     │   │   ├── 14bc0002-c883-4adf-8cf6-c4f7656f6ea0.json
+     │   │   ├── f1a7c14e-2e8e-4c3b-8ced-f475a4c402bb.json
+     │   │   └── processinfo/
+     │   │       ├── 14bc0002-c883-4adf-8cf6-c4f7656f6ea0.json
+     │   │       ├── f1a7c14e-2e8e-4c3b-8ced-f475a4c402bb.json
+     │   │       └── index.json
+     │   ├── build/
+     │   │   ├── ganache.core.node.js
+     │   │   └── ganache.core.node.js.map
+     │   ├── lib/
+     │   │   ├── blockchain_double.js
+     │   │   ├── block_tracker.js
+     │   │   ├── database.js
+     │   │   ├── httpServer.js
+     │   │   ├── provider.js
+     │   │   ├── server.js
+     │   │   ├── statemanager.js
+     │   │   ├── webSocketServer.js
+     │   │   ├── database/
+     │   │   │   ├── blocklogsserializer.js
+     │   │   │   ├── blockserializer.js
+     │   │   │   ├── bufferserializer.js
+     │   │   │   ├── filedown.js
+     │   │   │   ├── leveluparrayadapter.js
+     │   │   │   ├── levelupobjectadapter.js
+     │   │   │   ├── levelupvalueadapter.js
+     │   │   │   ├── receiptserializer.js
+     │   │   │   └── txserializer.js
+     │   │   ├── forking/
+     │   │   │   ├── forked_blockchain.js
+     │   │   │   └── forked_storage_trie.js
+     │   │   ├── subproviders/
+     │   │   │   ├── delayedblockfilter.js
+     │   │   │   ├── gethdefaults.js
+     │   │   │   ├── geth_api_double.js
+     │   │   │   ├── reactiveblocktracker.js
+     │   │   │   └── requestfunnel.js
+     │   │   └── utils/
+     │   │       ├── block_helper.js
+     │   │       ├── errorhelper.js
+     │   │       ├── log.js
+     │   │       ├── random.js
+     │   │       ├── receipt.js
+     │   │       ├── runtimeerror.js
+     │   │       ├── to.js
+     │   │       ├── transaction.js
+     │   │       ├── txrejectederror.js
+     │   │       └── gas/
+     │   │           ├── binSearch.js
+     │   │           ├── estimateGas.js
+     │   │           └── guestimation.js
+     │   ├── patches/
+     │   │   ├── keccak+3.0.1.patch
+     │   │   └── web3-provider-engine+14.2.1.patch
+     │   └── typings/
+     │       └── index.d.ts
+     │
+     ├── hooks/
+     │   ├── eventlogs.ts
+     │   ├── index.ts
+     │   ├── useAppToast.ts
+     │   ├── useEthers.ts
+     │   ├── useFetch.ts
+     │   ├── useLoadSafe.ts
+     │   ├── useSafeDetails.ts.tsx
+     │   └── useTokenTransactions.ts
+     │
+     ├── images/
+     │   └── blockdaologo.png
+     │
+     ├── interfaces/
+     │   ├── ICrowdSource.sol
+     │   ├── IDAO.sol
+     │   ├── IERC20.sol
+     │   ├── IERC20Metadata.sol
+     │   ├── IFileToken.sol
+     │   ├── ILandOwnership.sol
+     │   ├── IPortfolioContract.sol
+     │   ├── ISafeAdmin.sol
+     │   ├── ISafeContract.sol
+     │   ├── ISwapContract.sol
+     │   ├── ITokenABC.sol
+     │   ├── ITokenBTC.sol
+     │   ├── ITokenETH.sol
+     │   ├── ITokenXYZ.sol
+     │   ├── ITransactionContract.sol
+     │   ├── IUncertaintyAnalytics.sol
+     │   ├── IUniswapV2Router02.sol
+     │   └── MultiSigWallet.sol
+     │
+     ├── library/
+     │   ├── Base64.sol
+     │   ├── FixedPointMath.sol
+     │   ├── Math.sol
+     │   ├── Power.sol
+     │   ├── SafeMath.sol
+     │   ├── StringUtils.sol
+     │   ├── TransactionTypes.sol
+     │   └── UQ112x112.sol
+     │
+     ├── logs/
+     │   ├── blockchain_workflow.log
+     │   ├── city_module.log
+     │   └── emissions_module.log
+     │
+     ├── migrations/
+     │   ├── 10_initial_migration.js
+     │   ├── 11_initial_migration.js
+     │   ├── 1_initial_migration.js
+     │   ├── 2_deploy_contracts.js
+     │   ├── 3_initial_migration.js
+     │   ├── 4_initial_migration.js
+     │   ├── 5_initial_migration.js
+     │   ├── 6_initial_migration.js
+     │   ├── 7_initial_migration.js
+     │   ├── 8_initial_migration.js
+     │   └── 9_initial_migration.js
+     │
+     ├── pages/
+     │   ├── crowdSource.tsx
+     │   ├── CSV.txt
+     │   ├── dao.tsx
+     │   ├── error.tsx
+     │   ├── favicon.ico
+     │   ├── globals.css
+     │   ├── hello.js
+     │   ├── index.tsx
+     │   ├── layout.tsx
+     │   ├── NextAuthFiles.txt
+     │   ├── originaltokenswap.tsx
+     │   ├── payment.tsx
+     │   ├── process-transaction.ts
+     │   ├── protected.js
+     │   ├── route.txt
+     │   ├── user.ts
+     │   ├── useSession.tsx
+     │   ├── welcome.tsx
+     │   ├── _app.tsx
+     │   ├── _document.tsx
+     │   ├── api/
+     │   │   ├── error.tsx
+     │   │   ├── globals.css
+     │   │   ├── index.tsx
+     │   │   ├── protected.js
+     │   │   ├── useSession.tsx
+     │   │   ├── _app.tsx
+     │   │   ├── _document.tsx
+     │   │   ├── auth/
+     │   │   │   ├── new-user.tsx
+     │   │   │   ├── signin.tsx
+     │   │   │   ├── signout.tsx
+     │   │   │   ├── signup.tsx
+     │   │   │   └── [...nextauth].ts
+     │   │   ├── crowdsource/
+     │   │   │   ├── crowdSource.tsx
+     │   │   │   └── index.tsx
+     │   │   ├── dao/
+     │   │   │   ├── dao.tsx
+     │   │   │   └── index.ts
+              ─ electricity-payment/
+     │   │        ├── bills.tsx
+     │   │        ├── history.tsx
+     │   │        ├── index.tsx
+     │   │   └     ── pay.tsx
+     │   │   ├── landownership/
+     │   │   │   ├── index.ts
+     │   │   │   └── landownership.ts
+     │   │   ├── payments/
+     │   │   │   ├── index.ts
+     │   │   │   └── payments.tsx
+     │   │   ├── swap/
+     │   │   │   ├── index.ts
+     │   │   │   ├── originaltokenswap.tsx
+     │   │   │   ├── swap.tsx
+     │   │   │   ├── swaptransfer.tsx
+     │   │   │   └── transfer.tsx
+     │   │   ├── transactions/
+     │   │   │   ├── index.ts
+     │   │   │   └── process-transaction.ts
+     │   │   └── users/
+     │   │       ├── index.ts
+     │   │       ├── users.ts
+     │   │       └── welcome.tsx
+     │   ├── auth/
+     │   │   ├── new-user.tsx
+     │   │   ├── signin.tsx
+     │   │   ├── signout.tsx
+     │   │   ├── signup.tsx
+     │   │   └── [...nextauth].ts
+     │   ├── safe/
+     │   │   ├── index.tsx
+     │   │   └── [safeAddress]/
+     │   │       ├── assets.tsx
+     │   │       └── transfers.tsx
+     │   ├── swap/
+     │   │   ├── index.tsx
+     │   │   ├── swap.tsx
+     │   │   ├── swaptransfer.tsx
+     │   │   └── transfer.tsx
+     │   └── transactions/
+     │       └── index.tsx
+     ││   ├── token/  # New token-related pages
+│   │   ├── index.tsx
+│   │   └── token.tsx
+     ├── passchain/
+     │   ├── .gitattributes
+     │   └── LICENSE
+     │
+     ├── path/
+     │   └── to/
+     │       └── project/
+     │           └── logs/
+     │               └── blockchain_development.log
+     │
+     ├── public/
+     │   ├── favicon.ico
+     │   ├── logo.png
+     │   ├── next.svg
+     │   └── vercel.svg
+     │
+     ├── python/
+     │   ├── blockchainworkflow.py
+     │   ├── climatemodule.py
+     │   ├── companymodule.py
+     │   ├── deploy_contracts.py
+     │   ├── emmissionsmodule.py
+     │   ├── healthmodule.py
+     │   ├── renewalmodule.py
+     │   ├── setup_blockchain.ipynb
+     │   ├── __init__.py
+     │   └── __pycache__/
+     │       ├── blockchainworkflow.cpython-313.pyc
+     │       ├── climatemodule.cpython-313.pyc
+     │       ├── companymodule.cpython-313.pyc
+     │       ├── emmissionsmodule.cpython-313.pyc
+     │       ├── healthmodule.cpython-313.pyc
+     │       ├── renewalmodule.cpython-313.pyc
+     │       └── __init__.cpython-313.pyc
+     │
+     ├── repository/
+     │   └── .gitattributes
+     │
+     ├── scripts/
+     │   ├── deploy_ethereum.js
+     │   ├── deploy_polkadot.js
+     │   └── measure_performance.js
+     │
+     ├── services/
+     │   ├── blockchain-service.ts
+     │   ├── contract-interactions.ts
+     │   ├── cross-chain-service.ts
+     │   ├── deploy.js
+     │   ├── firebaseConfig.tsx
+     │   ├── mutations.ts
+     │   ├── queries.ts
+     │   ├── tatum-blockchain-service.ts
+     │   └── transaction-processor.ts
+     │
+     ├── stores/
+     │   ├── ethersStore.ts
+     │   ├── safeStore.ts
+     │   ├── transactionStore.ts
+     │   ├── userStore.ts
+     │   └── ContextStores/
+     │       └── walletStore.ts
+     │
+     ├── styles/
+     │   ├── globals.css
+     │   └── Home.module.css
+     │
+     ├── test/
+     │   ├── blockchain_registry_test.js
+     │   ├── cllimateintergration_test.js
+     │   ├── passchain_flow_test.js
+     │   ├── relay_chain_test.js
+     │   ├── sample-test.js
+     │   ├── uncertaintyanaliticstest.txt
+     │   ├── uncertaintytest2.txt
+     │   └── uncertainty_analytics_test.js
+     │
+     ├── theme/
+     │   └── index.ts
+     │
+     └── utils/
+         ├── authUtils.tsx
+         ├── contract-loader.ts
+         ├── createSafe.ts
+         ├── envUtils.ts
+         ├── errorMessage.tsx
+         ├── ethadapters.ts
+         ├── etherjspackageformation.txt
+         ├── etherUtils.ts
+         ├── filetokenupdeployupgradeable.js
+         ├── formatDate.ts
+         ├── formatTransfersTable.ts
+         ├── gethardhatconfig.js
+         ├── getHelper.ts
+         ├── getHiddenName.ts
+         ├── helper2.ts
+         ├── helpers.ts
+         ├── index.ts
+         ├── logger.ts
+         ├── networkDefinition.ts
+         ├── performance-tracker.ts
+         ├── toastUtils.ts
+         ├── tokenUtils.ts
+         ├── Transactions.json
+         └── web3-config.ts
+
+├── .eslintrc.json
+├── deployment-script.js
+├── global.d.ts
+├── next-env.d.ts
+├── next.config.js
+├── package-config.json
+├── package-lock.json
+├── package.json
+├── truffle-config.js
+├── tsconfig.json
+└── yarn.lock
+```

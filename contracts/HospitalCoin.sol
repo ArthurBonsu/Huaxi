@@ -3,10 +3,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract HospitalCoin is ERC20("HXLiuCoin", "HLX"), Ownable, ReentrancyGuard {
-  
+contract HospitalCoin is ERC20("HXLiuCoin", "HLX"), Ownable(msg.sender) {
     // Coin details
     uint256 public constant MAX_SUPPLY = 10_000_000 * 10**18;  // 10 million tokens
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10**18;  // 1 million initial supply
@@ -49,32 +47,12 @@ contract HospitalCoin is ERC20("HXLiuCoin", "HLX"), Ownable, ReentrancyGuard {
         uint256 indexed appointmentId, 
         address doctor
     );
-    event FeeCollectorUpdated(address newFeeCollector);
-    event FeePercentageUpdated(uint256 newPercentage);
 
    
-    // Burn tokens from caller's address
-    function burn(uint256 amount) public {
-        _burn(msg.sender, amount);
-    }
+  constructor() {
+    _mint(msg.sender, INITIAL_SUPPLY);
+  }
 
-    // Owner can burn tokens from any address (requires approval)
-    function burnFrom(address account, uint256 amount) public onlyOwner {
-        _burn(account, amount);
-    }
-
-    // Set fee collector address
-    function setFeeCollector(address _feeCollector) public onlyOwner {
-        feeCollector = _feeCollector;
-        emit FeeCollectorUpdated(_feeCollector);
-    }
-
-    // Set hospital fee percentage
-    function setHospitalFeePercentage(uint256 _feePercentage) public onlyOwner {
-        require(_feePercentage <= 1000, "Fee cannot exceed 10%"); // Safety limit
-        hospitalFeePercentage = _feePercentage;
-        emit FeePercentageUpdated(_feePercentage);
-    }
 
     // Request an appointment
     function requestAppointment(

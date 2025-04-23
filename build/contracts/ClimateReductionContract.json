@@ -93,7 +93,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -106,7 +107,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -171,7 +173,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_creditMarket\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"city\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newEmissions\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"ReductionUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"city\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"TargetAchieved\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"city\",\"type\":\"string\"}],\"name\":\"calculateRequiredCredits\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"name\":\"cityTargets\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"initialEmissions\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"targetEmissions\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"currentEmissions\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"achieved\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditMarket\",\"outputs\":[{\"internalType\":\"contract ICreditMarketContract\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"city\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"initial\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"target\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"timeframe\",\"type\":\"uint256\"}],\"name\":\"setReductionTarget\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"city\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"newEmissions\",\"type\":\"uint256\"}],\"name\":\"updateEmissions\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/climate/TemperatureRenewalContract.sol\":\"ClimateReductionContract\"},\"evmVersion\":\"shanghai\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/climate/TemperatureRenewalContract.sol\":{\"keccak256\":\"0x78c96728fbe5fd4f814acf80dd0ae1b13e5aa2322cc703e59eae39fb43f1512a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://968ef63a4c2f9f445ea342db245859c34b053d35616a2f656779e937a58df6e0\",\"dweb:/ipfs/QmWgj5E3JPxoeAFTfcXhXk7qyJWwBHhWXoFy56Y62P3Vkn\"]}},\"version\":1}",
@@ -11022,7 +11025,8 @@
   },
   "networks": {},
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-02-21T06:43:13.898Z",
+  "updatedAt": "2025-04-23T14:58:36.731Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},

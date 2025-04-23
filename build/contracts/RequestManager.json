@@ -23,7 +23,8 @@
         }
       ],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_analytics\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"submitRequest\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/RequestManager.sol\":\"RequestManager\"},\"evmVersion\":\"shanghai\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/RequestManager.sol\":{\"keccak256\":\"0xdfa552269cf64f537b6011df0526fcde20d92ca0c37d43dcf8c789a2f56241dc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://084ac63d843254ce70b491cc539af3fcbe01379283c9bf8c021071eb3faf1b6d\",\"dweb:/ipfs/QmTVqRaggQpk9s3DoTXCwsHPBqN6GxZnDRApczGfpVJrze\"]},\"project:/interfaces/IUncertaintyAnalytics.sol\":{\"keccak256\":\"0x2280fc59708133031ae0bbb9768b8998cd926c209708b7a13ec2bd078b38df92\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8eef9ffd933c3cc3bed6d083df8403ab8935ee89d529545cfa3d92cb655dc03f\",\"dweb:/ipfs/QmXaj238HQobXRaKPm2z9t7YtgZQxcVRm8r1NejVF3oVhE\"]}},\"version\":1}",
@@ -1658,7 +1659,8 @@
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-02-21T06:43:13.833Z",
+  "updatedAt": "2025-04-23T14:58:35.571Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},

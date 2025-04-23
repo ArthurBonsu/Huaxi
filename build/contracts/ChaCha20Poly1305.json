@@ -33,7 +33,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"plaintext\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"},{\"internalType\":\"bytes12\",\"name\":\"nonce\",\"type\":\"bytes12\"}],\"name\":\"encrypt\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"ciphertext\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"tag\",\"type\":\"bytes\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Implementation of ChaCha20-Poly1305 AEAD\",\"kind\":\"dev\",\"methods\":{\"encrypt(bytes,bytes32,bytes12)\":{\"details\":\"Encrypt data using ChaCha20-Poly1305\"}},\"title\":\"ChaCha20Poly1305\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/blockchain/ChaCha20Poly1305.sol\":\"ChaCha20Poly1305\"},\"evmVersion\":\"shanghai\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/security/ReentrancyGuard.sol\":{\"keccak256\":\"0xa535a5df777d44e945dd24aa43a11e44b024140fc340ad0dfe42acf4002aade1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://41319e7f621f2dc3733511332c4fd032f8e32ad2aa7fd6f665c19741d9941a34\",\"dweb:/ipfs/QmcYR3bd862GD1Bc7jwrU9bGxrhUu5na1oP964bDCu2id1\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee\",\"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu\"]},\"project:/contracts/blockchain/ChaCha20Poly1305.sol\":{\"keccak256\":\"0x315422fa36b8352a04780e977e6d86b48fead7905a16ded0842cfe48c7e15581\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7d508cbb10da3b5f197a6bdefbc0f59b2998cfce5615db4ed8c4e22ce00baba1\",\"dweb:/ipfs/QmcZge1BypphDnwY2PoYev7Qmig9DhoQMoz1k8i8Hc4YuT\"]}},\"version\":1}",
@@ -15921,7 +15922,8 @@
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-02-21T06:43:13.852Z",
+  "updatedAt": "2025-04-23T14:58:32.583Z",
+  "networkType": "ethereum",
   "devdoc": {
     "details": "Implementation of ChaCha20-Poly1305 AEAD",
     "kind": "dev",

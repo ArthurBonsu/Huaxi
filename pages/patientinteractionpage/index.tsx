@@ -1,5 +1,5 @@
-// pages/api/patientinteractionpage/patientinteractionpage.tsx
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { 
   Box, 
   VStack, 
@@ -23,6 +23,7 @@ import { Logger } from '@/utils/logger';
 
 const PatientInteractionPage: React.FC = () => {
   Logger.info('PatientInteractionPage', 'Component rendering');
+  const router = useRouter();
   
   const { 
     currentAccount, 
@@ -40,6 +41,44 @@ const PatientInteractionPage: React.FC = () => {
   
   const [tabIndex, setTabIndex] = useState(0);
   const toast = useToast();
+  const [isCheckingProfile, setIsCheckingProfile] = useState(true);
+
+  // Check if user has completed onboarding
+  useEffect(() => {
+    const checkPatientProfile = async () => {
+      if (!currentAccount) return;
+      
+      try {
+        // Check localStorage for existing profile flag
+        const hasCompletedOnboarding = localStorage.getItem(`patient_onboarded_${currentAccount}`);
+        
+        // If no profile, redirect to welcome page
+        if (!hasCompletedOnboarding) {
+          Logger.info('PatientInteractionPage', 'No patient profile found, redirecting to welcome');
+          router.push('/patientinteractionpage/patientwelcome');
+          return;
+        }
+        
+        // Load patient data if they have a profile
+        // This would typically come from your blockchain contract
+        // For now we'll just mark that we've checked
+        setIsCheckingProfile(false);
+        
+        Logger.info('PatientInteractionPage', 'Patient profile loaded');
+      } catch (error) {
+        Logger.error('PatientInteractionPage', 'Error checking patient profile', {
+          error: error instanceof Error ? error.message : String(error)
+        });
+        setIsCheckingProfile(false);
+      }
+    };
+    
+    if (currentAccount) {
+      checkPatientProfile();
+    } else {
+      setIsCheckingProfile(false);
+    }
+  }, [currentAccount, router]);
 
   // Log component lifecycle
   useEffect(() => {
@@ -209,6 +248,16 @@ const PatientInteractionPage: React.FC = () => {
       });
     }
   };
+
+  // Show loading state while checking profile
+  if (isCheckingProfile && currentAccount) {
+    return (
+      <Box maxWidth="600px" margin="auto" p={6} textAlign="center">
+        <Heading mb={6}>Loading Your Profile</Heading>
+        <Text>Please wait while we load your information...</Text>
+      </Box>
+    );
+  }
 
   return (
     <Box maxWidth="600px" margin="auto" p={6}>

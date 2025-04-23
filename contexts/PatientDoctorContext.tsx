@@ -22,6 +22,15 @@ export interface Doctor {
   specialization: string;
 }
 
+// Add new patient profile interface
+export interface PatientProfile {
+  name: string;
+  email?: string;
+  birthDate?: string;
+  phone?: string;
+  address: string;
+}
+
 // Add Ethereum provider type
 interface Ethereum {
   request: (args: { method: string; params?: any[] }) => Promise<any>;
@@ -38,6 +47,9 @@ export interface PatientDoctorContextType {
   // Patient Interactions
   createPatientRequest: (patientDetails: Omit<Patient, 'id' | 'status'>) => Promise<void>;
   payForAppointment: (patientAddress: string, amount: number) => Promise<void>;
+  
+  // Patient Profile management
+  createPatientProfile: (profileData: PatientProfile) => Promise<void>;
   
   // Doctor Interactions
   createDoctorProfile: (doctorDetails: Omit<Doctor, 'id'>) => Promise<void>;
@@ -239,6 +251,43 @@ export const PatientDoctorProvider: React.FC<{children: React.ReactNode}> = ({ c
     }
   };
 
+  // *** NEW FUNCTION: Create Patient Profile ***
+  const createPatientProfile = async (profileData: PatientProfile) => {
+    logger.info('PatientDoctorContext', 'Creating patient profile', profileData);
+    
+    try {
+      if (!currentAccount) {
+        logger.warn('PatientDoctorContext', 'No wallet connected');
+        throw new Error('Wallet not connected');
+      }
+      
+      // Validate profile data
+      if (!profileData.name) {
+        logger.warn('PatientDoctorContext', 'Missing required profile field: name');
+        throw new Error('Name is required for patient profile');
+      }
+
+      // In a real implementation, this would call a contract method
+      // Simulate blockchain delay
+      logger.debug('PatientDoctorContext', 'Simulating blockchain transaction for profile creation');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Store in local storage for persistence (in a real app, this would be on blockchain)
+      localStorage.setItem(`patient_profile_${currentAccount}`, JSON.stringify(profileData));
+      localStorage.setItem(`patient_onboarded_${currentAccount}`, 'true');
+      
+      logger.info('PatientDoctorContext', 'Patient profile created successfully', {
+        name: profileData.name,
+        address: profileData.address || currentAccount
+      });
+    } catch (error) {
+      logger.error('PatientDoctorContext', 'Error creating patient profile', { 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+      throw error;
+    }
+  };
+
   // Patient Request Creation
   const createPatientRequest = async (patientDetails: Omit<Patient, 'id' | 'status'>) => {
     logger.info('PatientDoctorContext', 'Creating patient request', patientDetails);
@@ -358,6 +407,9 @@ export const PatientDoctorProvider: React.FC<{children: React.ReactNode}> = ({ c
       // This would interact with the smart contract
       logger.debug('PatientDoctorContext', 'Simulating blockchain transaction for doctor profile creation');
       await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Also store in localStorage for this demo (in a real app, this would be on blockchain)
+      localStorage.setItem(`doctor_onboarded_${currentAccount}`, 'true');
       
       logger.info('PatientDoctorContext', 'Doctor profile created successfully', {
         id: doctorId,
@@ -581,6 +633,7 @@ export const PatientDoctorProvider: React.FC<{children: React.ReactNode}> = ({ c
     createPatientRequest,
     payForAppointment,
     createDoctorProfile,
+    createPatientProfile, // Add the new function to the context value
     reviewPatientRequests,
     approvePatientRequest,
     rejectPatientRequest,

@@ -1,4 +1,4 @@
-// pages/doctordashboard/welcome.tsx
+// pages/doctordashboard/doctorwelcome.tsx
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -20,7 +20,11 @@ import {
   Flex,
   SimpleGrid,
   Icon,
-  Progress
+  Progress,
+  FormControl,
+  FormLabel,
+  Select,
+  Input
 } from '@chakra-ui/react';
 import { usePatientDoctorContext } from '@/contexts/PatientDoctorContext';
 import { CheckCircleIcon, InfoIcon } from '@chakra-ui/icons';
@@ -29,9 +33,32 @@ import { Logger } from '@/utils/logger';
 const DoctorWelcome: React.FC = () => {
   const router = useRouter();
   const toast = useToast();
-  const { currentAccount, connectWallet } = usePatientDoctorContext();
+  const { 
+    currentAccount, 
+    connectWallet,
+    createDoctorProfile 
+  } = usePatientDoctorContext();
+  
   const [onboardingStep, setOnboardingStep] = useState(1);
-  const totalSteps = 3;
+  const totalSteps = 4; // Added one more step for profile creation
+  
+  const [doctorProfile, setDoctorProfile] = useState({
+    name: '',
+    specialization: '',
+    licenseNumber: '',
+    hospital: ''
+  });
+
+  // Check if user already has profile on mount
+  useEffect(() => {
+    if (currentAccount) {
+      const hasProfile = localStorage.getItem(`doctor_onboarded_${currentAccount}`);
+      if (hasProfile) {
+        // User already has a profile, redirect to main dashboard
+        router.push('/doctordashboard');
+      }
+    }
+  }, [currentAccount, router]);
 
   // Log component lifecycle
   useEffect(() => {
@@ -58,6 +85,71 @@ const DoctorWelcome: React.FC = () => {
       toast({
         title: "Connection Failed",
         description: error instanceof Error ? error.message : "Failed to connect wallet",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  // Handle profile input changes
+  const handleProfileInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setDoctorProfile(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle profile creation
+  const handleCreateProfile = async () => {
+    try {
+      // Validate inputs
+      if (!doctorProfile.name || !doctorProfile.specialization) {
+        toast({
+          title: "Missing Information",
+          description: "Please provide your name and specialization to continue.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      // Create profile using context method
+      await createDoctorProfile({
+        name: doctorProfile.name,
+        specialization: doctorProfile.specialization,
+        address: currentAccount
+      });
+
+      // Mark as onboarded in localStorage
+      if (currentAccount) {
+        localStorage.setItem(`doctor_onboarded_${currentAccount}`, 'true');
+        localStorage.setItem(`doctor_name_${currentAccount}`, doctorProfile.name);
+        
+        // Store additional info if needed
+        const additionalInfo = {
+          licenseNumber: doctorProfile.licenseNumber,
+          hospital: doctorProfile.hospital
+        };
+        localStorage.setItem(`doctor_details_${currentAccount}`, JSON.stringify(additionalInfo));
+      }
+
+      toast({
+        title: "Profile Created",
+        description: "Your doctor profile has been created successfully.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      // Move to next step
+      setOnboardingStep(onboardingStep + 1);
+    } catch (error) {
+      toast({
+        title: "Profile Creation Failed",
+        description: error instanceof Error ? error.message : "Failed to create profile",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -122,7 +214,75 @@ const DoctorWelcome: React.FC = () => {
       case 2:
         return (
           <VStack spacing={6} align="flex-start" w="full">
-            <Heading size="lg">Step 2: Dashboard Features</Heading>
+            <Heading size="lg">Step 2: Create Your Doctor Profile</Heading>
+            <Text>
+              Let&apos;s set up your doctor profile. This information will be used to verify your identity and professional credentials.
+            </Text>
+            
+            <VStack spacing={4} w="full">
+              <FormControl isRequired>
+                <FormLabel>Full Name</FormLabel>
+                <Input 
+                  name="name"
+                  value={doctorProfile.name}
+                  onChange={handleProfileInputChange}
+                  placeholder="Enter your full name"
+                />
+              </FormControl>
+              
+              <FormControl isRequired>
+                <FormLabel>Specialization</FormLabel>
+                <Select 
+                  name="specialization"
+                  value={doctorProfile.specialization}
+                  onChange={handleProfileInputChange}
+                  placeholder="Select your specialization"
+                >
+                  <option value="General Practice">General Practice</option>
+                  <option value="Cardiology">Cardiology</option>
+                  <option value="Neurology">Neurology</option>
+                  <option value="Pediatrics">Pediatrics</option>
+                  <option value="Orthopedics">Orthopedics</option>
+                  <option value="Oncology">Oncology</option>
+                </Select>
+              </FormControl>
+              
+              <FormControl>
+                <FormLabel>License Number</FormLabel>
+                <Input 
+                  name="licenseNumber"
+                  value={doctorProfile.licenseNumber}
+                  onChange={handleProfileInputChange}
+                  placeholder="Enter your medical license number"
+                />
+              </FormControl>
+              
+              <FormControl>
+                <FormLabel>Hospital/Institution</FormLabel>
+                <Input 
+                  name="hospital"
+                  value={doctorProfile.hospital}
+                  onChange={handleProfileInputChange}
+                  placeholder="Enter your hospital or institution name"
+                />
+              </FormControl>
+              
+              <Button 
+                colorScheme="green" 
+                mt={4} 
+                w="full"
+                onClick={handleCreateProfile}
+              >
+                Create Profile
+              </Button>
+            </VStack>
+          </VStack>
+        );
+
+      case 3:
+        return (
+          <VStack spacing={6} align="flex-start" w="full">
+            <Heading size="lg">Step 3: Dashboard Features</Heading>
             <Text>
               The Doctor Dashboard provides you with powerful tools to manage your medical practice on the blockchain:
             </Text>
@@ -165,10 +325,10 @@ const DoctorWelcome: React.FC = () => {
           </VStack>
         );
 
-      case 3:
+      case 4:
         return (
           <VStack spacing={6} align="flex-start" w="full">
-            <Heading size="lg">Step 3: Ready to Begin</Heading>
+            <Heading size="lg">Step 4: Ready to Begin</Heading>
             <Text>
               You&apos;re all set to start using the Doctor Dashboard. Here are some final tips before you begin:
             </Text>
@@ -184,7 +344,7 @@ const DoctorWelcome: React.FC = () => {
               </ListItem>
               <ListItem>
                 <ListIcon as={InfoIcon} color="blue.500" />
-                Your first step will be to create your doctor profile with your specialization
+                Your profile is now securely stored on the blockchain
               </ListItem>
               <ListItem>
                 <ListIcon as={InfoIcon} color="blue.500" />
@@ -247,7 +407,7 @@ const DoctorWelcome: React.FC = () => {
               Back to Home
             </Button>
             
-            {onboardingStep > 1 && (
+            {onboardingStep > 1 && onboardingStep !== 2 && (
               <Button 
                 variant="outline" 
                 colorScheme="blue" 

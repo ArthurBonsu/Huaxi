@@ -1,5 +1,5 @@
-// pages/api/doctordashboard/doctordashboard.tsx
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import {
   Box,
   VStack,
@@ -20,6 +20,7 @@ import { Logger } from '@/utils/logger';
 
 const DoctorDashboard: React.FC = () => {
   Logger.info('DoctorDashboard', 'Component rendering');
+  const router = useRouter();
   
   const {
     currentAccount,
@@ -34,6 +35,44 @@ const DoctorDashboard: React.FC = () => {
 
   const toast = useToast();
   const [tabIndex, setTabIndex] = useState(0);
+  const [isCheckingProfile, setIsCheckingProfile] = useState(true);
+  const [hasDoctorProfile, setHasDoctorProfile] = useState(false);
+
+  // Check if user has completed onboarding
+  useEffect(() => {
+    const checkDoctorProfile = async () => {
+      if (!currentAccount) return;
+      
+      try {
+        // Check localStorage for existing profile flag
+        const hasCompletedOnboarding = localStorage.getItem(`doctor_onboarded_${currentAccount}`);
+        
+        // If no profile, redirect to welcome page
+        if (!hasCompletedOnboarding) {
+          Logger.info('DoctorDashboard', 'No doctor profile found, redirecting to welcome');
+          router.push('/doctordashboard/doctorwelcome');
+          return;
+        }
+        
+        // If they have a profile, mark as existing user
+        setHasDoctorProfile(true);
+        setIsCheckingProfile(false);
+        
+        Logger.info('DoctorDashboard', 'Doctor profile loaded');
+      } catch (error) {
+        Logger.error('DoctorDashboard', 'Error checking doctor profile', {
+          error: error instanceof Error ? error.message : String(error)
+        });
+        setIsCheckingProfile(false);
+      }
+    };
+    
+    if (currentAccount) {
+      checkDoctorProfile();
+    } else {
+      setIsCheckingProfile(false);
+    }
+  }, [currentAccount, router]);
 
   // Log component lifecycle
   useEffect(() => {
@@ -111,6 +150,14 @@ const DoctorDashboard: React.FC = () => {
         address: currentAccount
       });
 
+      // Mark user as having completed onboarding
+      if (currentAccount) {
+        localStorage.setItem(`doctor_onboarded_${currentAccount}`, 'true');
+        localStorage.setItem(`doctor_name_${currentAccount}`, doctorDetails.name);
+      }
+
+      setHasDoctorProfile(true);
+      
       Logger.info('DoctorDashboard', 'Doctor profile created successfully');
       
       toast({
@@ -165,6 +212,16 @@ const DoctorDashboard: React.FC = () => {
     }));
   };
 
+  // Show loading state while checking profile
+  if (isCheckingProfile && currentAccount) {
+    return (
+      <Box maxWidth="800px" margin="auto" p={6} textAlign="center">
+        <Heading mb={6}>Loading Your Profile</Heading>
+        <Text>Please wait while we load your information...</Text>
+      </Box>
+    );
+  }
+
   return (
     <Box maxWidth="800px" margin="auto" p={6}>
       <Heading mb={6} textAlign="center">
@@ -180,7 +237,7 @@ const DoctorDashboard: React.FC = () => {
         >
           Connect Wallet
         </Button>
-      ) : (
+      ) : hasDoctorProfile ? (
         <Tabs 
           variant="enclosed" 
           colorScheme="green" 
@@ -202,10 +259,7 @@ const DoctorDashboard: React.FC = () => {
             </TabPanel>
           </TabPanels>
         </Tabs>
-      )}
-
-      {/* Doctor Profile Creation Modal */}
-      {currentAccount && !doctorDetails.name && (
+      ) : (
         <Box
           borderWidth={1}
           borderRadius="lg"

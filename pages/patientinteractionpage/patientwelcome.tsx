@@ -1,4 +1,4 @@
-// pages/patientinteractionpage/welcome.tsx
+// pages/patientinteractionpage/patientwelcome.tsx
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -24,7 +24,11 @@ import {
   AccordionItem,
   AccordionButton,
   AccordionPanel,
-  AccordionIcon
+  AccordionIcon,
+  FormControl,
+  FormLabel,
+  Input,
+  FormHelperText
 } from '@chakra-ui/react';
 import { usePatientDoctorContext } from '@/contexts/PatientDoctorContext';
 import { CheckCircleIcon, InfoIcon, QuestionIcon } from '@chakra-ui/icons';
@@ -33,9 +37,33 @@ import { Logger } from '@/utils/logger';
 const PatientWelcome: React.FC = () => {
   const router = useRouter();
   const toast = useToast();
-  const { currentAccount, connectWallet } = usePatientDoctorContext();
+  const { 
+    currentAccount, 
+    connectWallet,
+    // Assuming these functions are in your context or would be added
+    createPatientProfile 
+  } = usePatientDoctorContext();
+  
   const [onboardingStep, setOnboardingStep] = useState(1);
-  const totalSteps = 3;
+  const totalSteps = 4; // Added one more step for profile creation
+  
+  const [patientProfile, setPatientProfile] = useState({
+    name: '',
+    email: '',
+    birthDate: '',
+    phone: ''
+  });
+
+  // Check if user already has profile on mount
+  useEffect(() => {
+    if (currentAccount) {
+      const hasProfile = localStorage.getItem(`patient_onboarded_${currentAccount}`);
+      if (hasProfile) {
+        // User already has a profile, redirect to main dashboard
+        router.push('/patientinteractionpage');
+      }
+    }
+  }, [currentAccount, router]);
 
   // Log component lifecycle
   useEffect(() => {
@@ -62,6 +90,66 @@ const PatientWelcome: React.FC = () => {
       toast({
         title: "Connection Failed",
         description: error instanceof Error ? error.message : "Failed to connect wallet",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  // Handle profile input changes
+  const handleProfileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPatientProfile(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle profile creation
+  const handleCreateProfile = async () => {
+    try {
+      // Validate inputs
+      if (!patientProfile.name) {
+        toast({
+          title: "Missing Information",
+          description: "Please provide your name to continue.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      // Create profile on blockchain (assuming this function exists in context)
+      // If you don't have this function yet, you can implement it later
+      if (typeof createPatientProfile === 'function') {
+        await createPatientProfile({
+          ...patientProfile,
+          address: currentAccount
+        });
+      }
+
+      // For now, we'll just mark them as onboarded in localStorage
+      if (currentAccount) {
+        localStorage.setItem(`patient_onboarded_${currentAccount}`, 'true');
+        localStorage.setItem(`patient_name_${currentAccount}`, patientProfile.name);
+      }
+
+      toast({
+        title: "Profile Created",
+        description: "Your patient profile has been created successfully.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      // Move to next step
+      setOnboardingStep(onboardingStep + 1);
+    } catch (error) {
+      toast({
+        title: "Profile Creation Failed",
+        description: error instanceof Error ? error.message : "Failed to create profile",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -172,7 +260,71 @@ const PatientWelcome: React.FC = () => {
       case 3:
         return (
           <VStack spacing={6} align="flex-start" w="full">
-            <Heading size="lg">Step 3: Frequently Asked Questions</Heading>
+            <Heading size="lg">Step 3: Create Your Patient Profile</Heading>
+            <Text>
+              Let&apos;s set up your patient profile. This information will be securely stored and only accessible to your authorized healthcare providers.
+            </Text>
+            
+            <VStack spacing={4} w="full">
+              <FormControl isRequired>
+                <FormLabel>Full Name</FormLabel>
+                <Input 
+                  name="name"
+                  value={patientProfile.name}
+                  onChange={handleProfileInputChange}
+                  placeholder="Enter your full name"
+                />
+              </FormControl>
+              
+              <FormControl>
+                <FormLabel>Email</FormLabel>
+                <Input 
+                  name="email"
+                  type="email"
+                  value={patientProfile.email}
+                  onChange={handleProfileInputChange}
+                  placeholder="Enter your email address"
+                />
+                <FormHelperText>Optional: For appointment notifications</FormHelperText>
+              </FormControl>
+              
+              <FormControl>
+                <FormLabel>Date of Birth</FormLabel>
+                <Input 
+                  name="birthDate"
+                  type="date"
+                  value={patientProfile.birthDate}
+                  onChange={handleProfileInputChange}
+                />
+              </FormControl>
+              
+              <FormControl>
+                <FormLabel>Phone Number</FormLabel>
+                <Input 
+                  name="phone"
+                  value={patientProfile.phone}
+                  onChange={handleProfileInputChange}
+                  placeholder="Enter your phone number"
+                />
+                <FormHelperText>Optional: For urgent communications</FormHelperText>
+              </FormControl>
+              
+              <Button 
+                colorScheme="green" 
+                mt={4} 
+                w="full"
+                onClick={handleCreateProfile}
+              >
+                Create Profile
+              </Button>
+            </VStack>
+          </VStack>
+        );
+
+      case 4:
+        return (
+          <VStack spacing={6} align="flex-start" w="full">
+            <Heading size="lg">Step 4: Frequently Asked Questions</Heading>
             
             <Accordion allowToggle w="full">
               <AccordionItem>
@@ -287,7 +439,7 @@ const PatientWelcome: React.FC = () => {
               Back to Home
             </Button>
             
-            {onboardingStep > 1 && (
+            {onboardingStep > 1 && onboardingStep !== 3 && (
               <Button 
                 variant="outline" 
                 colorScheme="blue" 

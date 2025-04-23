@@ -74,7 +74,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -98,7 +99,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -162,7 +164,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -186,7 +189,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -357,7 +361,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"transactionId\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"isSpeculative\",\"type\":\"bool\"}],\"name\":\"MetadataParsed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"originalProtocol\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"convertedProtocol\",\"type\":\"bytes32\"}],\"name\":\"ProtocolConverted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"transactionId\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"enum MetadataParser.TransactionStatus\",\"name\":\"status\",\"type\":\"uint8\"}],\"name\":\"TransactionStatusUpdated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_nodeId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_key\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_value\",\"type\":\"bytes32\"}],\"name\":\"addKeyValueToNode\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_originalProtocol\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_targetProtocol\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32[]\",\"name\":\"_opcodes\",\"type\":\"bytes32[]\"},{\"internalType\":\"bytes32[]\",\"name\":\"_convertedOpcodes\",\"type\":\"bytes32[]\"}],\"name\":\"convertProtocolInstructions\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"_payload\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"_key\",\"type\":\"bytes32\"},{\"internalType\":\"bytes12\",\"name\":\"_nonce\",\"type\":\"bytes12\"}],\"name\":\"encryptPayload\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"encryptedPayload\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"authTag\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"encryptionHandler\",\"outputs\":[{\"internalType\":\"contract ChaCha20Poly1305\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"irNodes\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"nodeType\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"value\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_nodeId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_nodeType\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"_value\",\"type\":\"bytes\"}],\"name\":\"parseToIRNode\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"parsedTransactions\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"transactionId\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"sourceProtocol\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"targetProtocol\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"encryptedPayload\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"authTag\",\"type\":\"bytes\"},{\"internalType\":\"bool\",\"name\":\"isSpeculative\",\"type\":\"bool\"},{\"internalType\":\"enum MetadataParser.TransactionStatus\",\"name\":\"status\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_recipient\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_sourceProtocol\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_targetProtocol\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"_payload\",\"type\":\"bytes\"},{\"internalType\":\"bool\",\"name\":\"_isSpeculative\",\"type\":\"bool\"}],\"name\":\"prepareTransactionMetadata\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"protocolInstructions\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"originalProtocol\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"convertedProtocol\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_transactionId\",\"type\":\"bytes32\"},{\"internalType\":\"enum MetadataParser.TransactionStatus\",\"name\":\"_status\",\"type\":\"uint8\"}],\"name\":\"updateTransactionStatus\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Enhanced version with actual encryption and detailed protocol conversion\",\"kind\":\"dev\",\"methods\":{},\"title\":\"MetadataParser\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/passchain/MetadataParser.sol\":\"MetadataParser\"},\"evmVersion\":\"shanghai\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/security/ReentrancyGuard.sol\":{\"keccak256\":\"0xa535a5df777d44e945dd24aa43a11e44b024140fc340ad0dfe42acf4002aade1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://41319e7f621f2dc3733511332c4fd032f8e32ad2aa7fd6f665c19741d9941a34\",\"dweb:/ipfs/QmcYR3bd862GD1Bc7jwrU9bGxrhUu5na1oP964bDCu2id1\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee\",\"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu\"]},\"project:/contracts/blockchain/ChaCha20Poly1305.sol\":{\"keccak256\":\"0x315422fa36b8352a04780e977e6d86b48fead7905a16ded0842cfe48c7e15581\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7d508cbb10da3b5f197a6bdefbc0f59b2998cfce5615db4ed8c4e22ce00baba1\",\"dweb:/ipfs/QmcZge1BypphDnwY2PoYev7Qmig9DhoQMoz1k8i8Hc4YuT\"]},\"project:/contracts/passchain/MetadataParser.sol\":{\"keccak256\":\"0xd6989325285437df252441198ea0cf92f2bcb97f6d8931e8a5bf70d57e859f2a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://56dc6b0ac76b0e6092131e3ea001026d95ac3ddba6bc3978a1d9fef1abbf0915\",\"dweb:/ipfs/QmYidB1EL2CZAswjaPri24XwDgCXxxajKSwHRhbc4WHfxu\"]}},\"version\":1}",
@@ -18214,7 +18219,8 @@
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-02-21T06:43:13.942Z",
+  "updatedAt": "2025-04-23T14:58:32.830Z",
+  "networkType": "ethereum",
   "devdoc": {
     "details": "Enhanced version with actual encryption and detailed protocol conversion",
     "kind": "dev",

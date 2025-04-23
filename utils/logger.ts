@@ -1,6 +1,7 @@
 // utils/logger.ts
 import { APPOINTMENT_CONFIG } from '@/config/appointment_config';
 import { getNetworkConfig } from '@/config/supported_network';
+import { EthereumProvider } from '@/config/types';
 
 export enum LogLevel {
   DEBUG = 'DEBUG',
@@ -60,13 +61,14 @@ export class Logger {
   private async updateNetworkInfo(): Promise<void> {
     if (typeof window !== 'undefined' && window.ethereum) {
       try {
-        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        // Use type assertion for window.ethereum
+        const chainId = await (window.ethereum as EthereumProvider).request({ method: 'eth_chainId' });
         const chainIdNum = parseInt(chainId, 16);
         const network = getNetworkConfig(chainIdNum);
         this.networkInfo = `${network.name} (${chainIdNum})`;
-        this.info('Logger', 'Network detected', { network: this.networkInfo });
       } catch (error) {
-        this.warn('Logger', 'Failed to detect network', { error: String(error) });
+        // Handle error gracefully
+        this.networkInfo = 'Unknown network';
       }
     }
   }

@@ -1,12 +1,9 @@
-// services/blockchain-service.ts
 import { ethers } from 'ethers';
 import { logger } from '@/utils/logger';
-import { getNetworkConfig } from '@/config/supported_network';
 import { SUPPORTED_NETWORKS } from '@/config/supported_network';
 import type { EthereumProvider } from '@/config/types.d';
-
-// NOTE: In a real implementation, you would import your contract ABIs
-const HOSPITAL_COIN_ABI = []; // Replace with actual ABI
+import HOSPITAL_COIN_ABI from '@/constants/abi';
+import CONTRACT_ADDRESSES from '@/config/contract_addresses.json';
 
 export class BlockchainService {
   private provider: ethers.providers.Web3Provider | null = null;
@@ -30,8 +27,10 @@ export class BlockchainService {
     
     if (window.ethereum) {
       try {
-        // Get the network ID
-        const chainIdHex = await window.ethereum.request({ method: 'eth_chainId' });
+        // Get the network ID using type assertion
+        const chainIdHex = await (window.ethereum as EthereumProvider).request({ 
+          method: 'eth_chainId' 
+        });
         const chainId = parseInt(chainIdHex as string, 16);
         this.networkId = chainId;
         
@@ -41,7 +40,6 @@ export class BlockchainService {
           networkName: networkInfo?.name || 'Unknown Network' 
         });
         
-       // services/blockchain-service.ts (continued)
         // Initialize provider
         this.provider = new ethers.providers.Web3Provider(window.ethereum as any);
         logger.debug('BlockchainService', 'Web3Provider initialized');
@@ -55,7 +53,7 @@ export class BlockchainService {
           logger.warn('BlockchainService', 'Connected to unsupported network', { chainId });
         } else {
           // Initialize contracts if on supported network
-          await this.initializeContracts(chainId);
+          await this.initializeContracts();
         }
         
         // Set up event listeners
@@ -73,12 +71,22 @@ export class BlockchainService {
     }
   }
   
-  private async initializeContracts(chainId: number): Promise<void> {
-    logger.info('BlockchainService', 'Initializing contracts', { chainId });
+  private async initializeContracts(chainId?: number): Promise<void> {
+    logger.info('BlockchainService', 'Initializing contracts', { 
+      chainId: chainId || this.networkId 
+    });
     
     try {
-      // In a real implementation, you would get contract addresses from a config
-      const hospitalCoinAddress = "0x1234567890123456789012345678901234567890"; // Replace with actual address
+      // Use provided chainId or fall back to networkId
+      const currentChainId = chainId || this.networkId;
+      
+      // Get HospitalCoin contract address for the current chain
+      // You might want to check CONTRACT_ADDRESSES for the specific chain
+      const hospitalCoinAddress = CONTRACT_ADDRESSES.HospitalCoin?.address;
+      
+      if (!hospitalCoinAddress) {
+        throw new Error('HospitalCoin contract address not found');
+      }
       
       if (!this.signer) {
         throw new Error('Signer not initialized');
@@ -92,7 +100,8 @@ export class BlockchainService {
       );
       
       logger.info('BlockchainService', 'HospitalCoin contract initialized', { 
-        address: hospitalCoinAddress 
+        address: hospitalCoinAddress,
+        chainId: currentChainId 
       });
     } catch (error) {
       logger.error('BlockchainService', 'Contract initialization failed', { 
@@ -101,7 +110,6 @@ export class BlockchainService {
       throw error;
     }
   }
-  
   private setupEventListeners(): void {
     logger.debug('BlockchainService', 'Setting up event listeners');
     
@@ -185,8 +193,8 @@ export class BlockchainService {
       });
       
       // Find the appointmentId from the event
-      const event = receipt.events?.find(e => e.event === 'AppointmentRequested');
-      const appointmentId = event?.args?.appointmentId.toString();
+const event = receipt.events?.find((e: ethers.Event) => e.event === 'AppointmentRequested');
+const appointmentId = event?.args?.appointmentId.toString();
       
       logger.info('BlockchainService', 'Appointment ID retrieved', { appointmentId });
       
@@ -486,6 +494,18 @@ export class BlockchainService {
       throw error;
     }
   }
+
+
+ // Optional: Method to get contract address for a specific contract
+ public getContractAddress(contractName: keyof typeof CONTRACT_ADDRESSES): string {
+  const contractAddress = CONTRACT_ADDRESSES[contractName]?.address;
+  
+  if (!contractAddress) {
+    throw new Error(`Contract address not found for ${contractName}`);
+  }
+  
+  return contractAddress;
+}
 }
 
 // Create a singleton instance

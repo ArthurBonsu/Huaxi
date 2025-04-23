@@ -39,23 +39,36 @@ const options: NextAuthOptions = {
     async session({ user, session, token }) {
       Logger.debug('Auth:NextAuth', 'Session callback', { 
         userId: user?.id || token.id,
-     
+        isNewUser: token.isNewUser
       });
       
       if (session.user) {
         session.user.id = token.id as string;
+        
+        // Add a flag to indicate if this is a new user
+        (session.user as any).isNewUser = token.isNewUser || false;
       }
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, profile }) {
       Logger.debug('Auth:NextAuth', 'JWT callback', { 
         tokenId: token.jti,
-        userId: user?.id
+        userId: user?.id,
+        isNewUser: user?.id ? true : token.isNewUser
       });
       
+      // Set isNewUser flag
       if (user) {
         token.id = user.id;
+        token.isNewUser = true;
       }
+
+      // Check if the user has selected a role
+      if (typeof window !== 'undefined') {
+        const hasSelectedRole = localStorage.getItem(`user_role_${token.id}`);
+        token.hasSelectedRole = !!hasSelectedRole;
+      }
+      
       return token;
     },
     async signIn({ user, account, profile }) {
@@ -65,8 +78,14 @@ const options: NextAuthOptions = {
         isNewUser: !user.email
       });
       
+      // Additional checks can be added here if needed
       return true;
     },
+    async redirect({ url, baseUrl }) {
+      // Customize redirect logic
+      // For new users, always redirect to new-user page
+      return baseUrl + '/auth/new-user';
+    }
   },
   events: {
     async signIn(message) {
@@ -94,16 +113,16 @@ const options: NextAuthOptions = {
     },
     async session(message) {
       Logger.debug('Auth:NextAuth', 'Session accessed', { 
-        userId: message.token.sub,
-       
+        userId: message.token.sub
       });
     },
   },
   pages: {
+    signIn: '/auth/signin',
     signOut: '/auth/signout',
-    error: '/auth/error', // Error code passed in query string as ?error=
-    verifyRequest: '/auth/verify-request', // (used for check email message)
-    newUser: '/auth/new-user', // New users will be directed here on first sign in (leave the property out if not of interest)
+    error: '/auth/error', 
+    verifyRequest: '/auth/verify-request',
+    newUser: '/auth/new-user', 
   },
   adapter: MongoDBAdapter(clientPromise),
   logger: {

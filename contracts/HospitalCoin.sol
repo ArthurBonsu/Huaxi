@@ -3,15 +3,14 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract HospitalCoin is ERC20("HXLiuCoin", "HLX"), Ownable(msg.sender) {
+
+contract HospitalCoin is ERC20("HXLiuCoin", "HLX"), Ownable(msg.sender), ReentrancyGuard {
     // Coin details
     uint256 public constant MAX_SUPPLY = 10_000_000 * 10**18;  // 10 million tokens
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10**18;  // 1 million initial supply
 
-  constructor() {
-        _mint(msg.sender, INITIAL_SUPPLY); // Owner is auto-set to deployer
-    }
     // Appointment-specific structures
     struct Appointment {
         address patient;
@@ -48,10 +47,19 @@ contract HospitalCoin is ERC20("HXLiuCoin", "HLX"), Ownable(msg.sender) {
         address doctor
     );
 
-   
-  constructor() {
-    _mint(msg.sender, INITIAL_SUPPLY);
-  }
+    constructor() {
+        _mint(msg.sender, INITIAL_SUPPLY);
+    }
+
+    // Burn tokens from caller's address
+    function burn(uint256 amount) public {
+        _burn(msg.sender, amount);
+    }
+
+    // Owner can burn tokens from any address (requires approval)
+    function burnFrom(address account, uint256 amount) public onlyOwner {
+        _burn(account, amount);
+    }
 
 
     // Request an appointment

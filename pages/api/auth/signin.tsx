@@ -62,6 +62,15 @@ const SignIn: FC<LoginProps> = ({ isCollapsed = false, username, email, password
 
   const { data: session, status } = useSession();
 
+  
+
+useEffect(() => {
+  if (hasCopied) {
+    Logger.debug('SignIn', 'Login details copied');
+    toast.showToast('Login details copied', 'info'); // Potential issue
+  }
+}, [hasCopied, toast]);
+
   // Log component lifecycle
   useEffect(() => {
     Logger.info('SignIn', 'Component mounted');

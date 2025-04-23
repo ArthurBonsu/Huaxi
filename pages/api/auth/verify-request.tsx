@@ -9,8 +9,25 @@ const VerifyRequest: FC = () => {
   
   const router = useRouter();
   const { email } = router.query;
+  const [countdown, setCountdown] = useState(30);
 
-  // Log component lifecycle
+  // Auto-redirect countdown effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          router.push('/api/auth/signin');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [router]);
+
+  // Lifecycle logging effect
   useEffect(() => {
     Logger.info('VerifyRequest', 'Component mounted', {
       emailProvided: !!email
@@ -34,9 +51,16 @@ const VerifyRequest: FC = () => {
         Please check your inbox and click the link to complete the sign-in process.
       </Text>
       <Text mb={6} fontSize="sm" color="gray.500">
-  If you don&apos;t see the email, please check your spam folder.
-</Text>
-      <Button colorScheme="blue" onClick={handleBackToSignIn}>
+        If you don&apos;t see the email, please check your spam folder.
+      </Text>
+      <Text mb={4} color="gray.600">
+        Redirecting to sign-in in {countdown} seconds...
+      </Text>
+      <Button 
+        colorScheme="blue" 
+        onClick={handleBackToSignIn}
+        width="full"
+      >
         Back to Sign In
       </Button>
     </Box>

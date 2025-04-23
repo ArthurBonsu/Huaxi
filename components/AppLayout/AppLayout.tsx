@@ -6,10 +6,16 @@ import {
   Spacer, 
   Button,
   useColorMode,
-  IconButton
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Avatar
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { usePatientDoctorContext } from '@/contexts/PatientDoctorContext';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { Logger } from '@/utils/logger';
 
@@ -23,6 +29,7 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
     currentAccount, 
     connectWallet 
   } = usePatientDoctorContext();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     Logger.info('AppLayout', 'Component mounted');
@@ -39,6 +46,13 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
     Logger.info('AppLayout', 'Color mode changed', { mode: colorMode });
   }, [colorMode]);
 
+  useEffect(() => {
+    Logger.info('AppLayout', 'Session status changed', { 
+      status, 
+      user: session?.user?.email || 'none' 
+    });
+  }, [session, status]);
+
   const handleToggleColorMode = () => {
     Logger.debug('AppLayout', 'Toggle color mode clicked', { currentMode: colorMode });
     toggleColorMode();
@@ -52,6 +66,16 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
     } catch (error) {
       Logger.error('AppLayout', 'Failed to connect wallet', { error: error instanceof Error ? error.message : String(error) });
     }
+  };
+
+  const handleSignIn = () => {
+    Logger.info('AppLayout', 'Sign in button clicked');
+    signIn();
+  };
+
+  const handleSignOut = () => {
+    Logger.info('AppLayout', 'Sign out button clicked');
+    signOut({ callbackUrl: '/' });
   };
 
   return (
@@ -81,7 +105,7 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
 
           {/* Navigation Links */}
           <Flex alignItems="center" gap={4}>
-            <Link href="/patient" passHref>
+            <Link href="/patientinteractionpage" passHref>
               <Button 
                 as="a" 
                 variant="ghost" 
@@ -92,7 +116,7 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
               </Button>
             </Link>
 
-            <Link href="/doctor" passHref>
+            <Link href="/doctordashboard" passHref>
               <Button 
                 as="a" 
                 variant="ghost" 
@@ -103,6 +127,39 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
               </Button>
             </Link>
 
+           
+{/* Authentication - fix the comment syntax */}
+{status === 'authenticated' && session?.user ? (
+  <Menu>
+    <MenuButton>
+      <Avatar 
+        size="sm" 
+        name={(session.user.name || session.user.email || "User") as string}
+        src={session.user.image || undefined} 
+      />
+    </MenuButton>
+    <MenuList>
+      <MenuItem>{session.user.name || session.user.email || "User"}</MenuItem>
+      <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+    </MenuList>
+  </Menu>
+) : status === 'loading' ? (
+  <Button 
+    colorScheme="teal"
+    isLoading
+    mr={4}
+  >
+    Loading...
+  </Button>
+) : (
+  <Button 
+    colorScheme="teal"
+    onClick={handleSignIn}
+    mr={4}
+  >
+    Sign In
+  </Button>
+)}
             {/* Wallet Connection */}
             {!currentAccount ? (
               <Button 

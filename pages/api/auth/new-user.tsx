@@ -1,16 +1,24 @@
 // pages/auth/new-user.tsx
 import { FC, useState, useEffect } from 'react';
-import { Heading, Text, Box, Button } from '@chakra-ui/react';
+import { Heading, Text, Box, Button, RadioGroup, Radio, Stack, VStack, useToast } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { Logger } from '@/utils/logger';
 
 const NewUser: FC = () => {
-  Logger.info('NewUser', 'Component rendering');
-  
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+  const toast = useToast();
+  const [role, setRole] = useState<string>('');
   const [countdown, setCountdown] = useState(5);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      Logger.warn('NewUser', 'No active session, redirecting to sign in');
+      router.push('/api/auth/signin');
+    }
+  }, [status, router]);
 
   // Log component lifecycle
   useEffect(() => {
@@ -24,18 +32,27 @@ const NewUser: FC = () => {
     };
   }, [session]);
 
-  // Auto-redirect countdown
+  // Countdown and redirect logic
   useEffect(() => {
-    if (!session) return;
+    if (!session || !role) return;
     
-    Logger.debug('NewUser', 'Starting redirect countdown');
+    Logger.debug('NewUser', 'Starting redirect countdown', { role });
     
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          Logger.info('NewUser', 'Redirect countdown completed, navigating to dashboard');
-          router.push('/');
+          Logger.info('NewUser', 'Redirect countdown completed, navigating to welcome page');
+          
+          // Save role in local storage
+          localStorage.setItem(`user_role_${session.user.id}`, role);
+          
+          // Redirect based on role
+          if (role === 'doctor') {
+            router.push('/doctordashboard/doctorwelcome');
+          } else {
+            router.push('/patientinteractionpage/patientwelcome');
+          }
           return 0;
         }
         return prev - 1;
@@ -45,27 +62,73 @@ const NewUser: FC = () => {
     return () => {
       clearInterval(timer);
     };
-  }, [router, session]);
+  }, [router, session, role]);
 
   const handleContinue = () => {
-    Logger.info('NewUser', 'Continue button clicked');
-    router.push('/');
+    if (!role) {
+      toast({
+        title: "Please select a role",
+        description: "You need to select either Patient or Doctor to continue",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    
+    Logger.info('NewUser', 'Continue button clicked', { selectedRole: role });
+    
+    // Save role in local storage
+    if (session?.user?.id) {
+      localStorage.setItem(`user_role_${session.user.id}`, role);
+    }
+    
+    // Redirect based on role
+    if (role === 'doctor') {
+      router.push('/doctordashboard/doctorwelcome');
+    } else {
+      router.push('/patientinteractionpage/patientwelcome');
+    }
   };
 
-  if (!session) {
-    Logger.warn('NewUser', 'No active session, redirecting to sign in');
-    router.push('/api/auth/signin');
-    return null;
+  // Loading state
+  if (status === 'loading') {
+    return (
+      <Box maxW="md" mx="auto" mt={8} textAlign="center">
+        <Heading mb={4}>Loading...</Heading>
+      </Box>
+    );
   }
 
   return (
-    <Box maxW="md" mx="auto" mt={8} textAlign="center">
+    <Box maxW="md" mx="auto" mt={8} textAlign="center" p={6} borderWidth="1px" borderRadius="lg">
       <Heading mb={4}>Welcome to Hospital Blockchain!</Heading>
       <Text mb={6}>
-  Your account has been created successfully. You&apos;ll be redirected to the dashboard in {countdown} seconds.
-</Text>
-      <Button colorScheme="blue" onClick={handleContinue}>
-        Continue to Dashboard
+        Your account has been created successfully. Please select your role:
+      </Text>
+      
+      <VStack spacing={6} align="center" mb={6}>
+        <RadioGroup onChange={setRole} value={role}>
+          <Stack direction="column" spacing={4}>
+            <Radio value="patient" size="lg">I am a Patient</Radio>
+            <Radio value="doctor" size="lg">I am a Doctor</Radio>
+          </Stack>
+        </RadioGroup>
+      </VStack>
+      
+      {role && (
+        <Text mb={6}>
+          You&apos;ll be redirected to the {role} portal in {countdown} seconds.
+        </Text>
+      )}
+      
+      <Button 
+        colorScheme="blue" 
+        onClick={handleContinue} 
+        isDisabled={!role}
+        width="full"
+      >
+        Continue to {role ? (role === 'doctor' ? 'Doctor' : 'Patient') : 'Selected'} Portal
       </Button>
     </Box>
   );

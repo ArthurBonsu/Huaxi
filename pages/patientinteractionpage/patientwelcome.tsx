@@ -33,10 +33,14 @@ import {
 import { usePatientDoctorContext } from '@/contexts/PatientDoctorContext';
 import { CheckCircleIcon, InfoIcon, QuestionIcon } from '@chakra-ui/icons';
 import { Logger } from '@/utils/logger';
+// Add this import at the top with other imports
+import { useSession } from 'next-auth/react';
 
 const PatientWelcome: React.FC = () => {
   const router = useRouter();
   const toast = useToast();
+  // Inside your component, add this line near other hooks
+const { data: session } = useSession();
   const { 
     currentAccount, 
     connectWallet,
@@ -54,16 +58,24 @@ const PatientWelcome: React.FC = () => {
     phone: ''
   });
 
-  // Check if user already has profile on mount
-  useEffect(() => {
-    if (currentAccount) {
-      const hasProfile = localStorage.getItem(`patient_onboarded_${currentAccount}`);
-      if (hasProfile) {
-        // User already has a profile, redirect to main dashboard
-        router.push('/patientinteractionpage');
-      }
+  // Add this useEffect or modify your existing one
+useEffect(() => {
+  // Check authentication first
+  if (!session) {
+    Logger.warn('PatientWelcome', 'No active session, redirecting to sign in');
+    router.push('/api/auth/signin');
+    return;
+  }
+  
+  // Then check for wallet and profile
+  if (currentAccount) {
+    const hasProfile = localStorage.getItem(`patient_onboarded_${currentAccount}`);
+    if (hasProfile) {
+      // User already has a profile, redirect to main dashboard
+      router.push('/patientinteractionpage');
     }
-  }, [currentAccount, router]);
+  }
+}, [currentAccount, router, session]);
 
   // Log component lifecycle
   useEffect(() => {
@@ -109,49 +121,47 @@ const PatientWelcome: React.FC = () => {
   // Handle profile creation
   const handleCreateProfile = async () => {
     try {
-      // Validate inputs
-      if (!patientProfile.name) {
+      // Validate inputs more thoroughly
+      if (!patientProfile.name || patientProfile.name.length < 2) {
         toast({
-          title: "Missing Information",
-          description: "Please provide your name to continue.",
+          title: "Invalid Name",
+          description: "Please provide a valid name (at least 2 characters).",
           status: "error",
           duration: 3000,
           isClosable: true,
         });
         return;
       }
-
-      // Create profile on blockchain (assuming this function exists in context)
-      // If you don't have this function yet, you can implement it later
-      if (typeof createPatientProfile === 'function') {
-        await createPatientProfile({
-          ...patientProfile,
-          address: currentAccount
+  
+      // Additional validations (email format, etc.)
+      if (patientProfile.email && !/\S+@\S+\.\S+/.test(patientProfile.email)) {
+        toast({
+          title: "Invalid Email",
+          description: "Please provide a valid email address.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
         });
+        return;
       }
-
-      // For now, we'll just mark them as onboarded in localStorage
-      if (currentAccount) {
-        localStorage.setItem(`patient_onboarded_${currentAccount}`, 'true');
-        localStorage.setItem(`patient_name_${currentAccount}`, patientProfile.name);
-      }
-
-      toast({
-        title: "Profile Created",
-        description: "Your patient profile has been created successfully.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-
-      // Move to next step
-      setOnboardingStep(onboardingStep + 1);
+  
+      // Rest of the existing profile creation logic
     } catch (error) {
+      // More detailed error logging
+      Logger.error('ProfileCreation', 'Detailed error', {
+        error: error instanceof Error ? error.message : String(error),
+        profileData: { 
+          name: patientProfile.name, 
+          email: patientProfile.email,
+          // Be careful not to log sensitive data
+        }
+      });
+  
       toast({
         title: "Profile Creation Failed",
-        description: error instanceof Error ? error.message : "Failed to create profile",
+        description: "An unexpected error occurred. Please try again.",
         status: "error",
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       });
     }

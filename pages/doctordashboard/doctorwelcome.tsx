@@ -30,9 +30,14 @@ import { usePatientDoctorContext } from '@/contexts/PatientDoctorContext';
 import { CheckCircleIcon, InfoIcon } from '@chakra-ui/icons';
 import { Logger } from '@/utils/logger';
 
+// Add this import at the top with other imports
+import { useSession } from 'next-auth/react';
+
 const DoctorWelcome: React.FC = () => {
   const router = useRouter();
   const toast = useToast();
+  // Inside your component, add this line near other hooks
+     const { data: session } = useSession();
   const { 
     currentAccount, 
     connectWallet,
@@ -49,16 +54,25 @@ const DoctorWelcome: React.FC = () => {
     hospital: ''
   });
 
-  // Check if user already has profile on mount
-  useEffect(() => {
-    if (currentAccount) {
-      const hasProfile = localStorage.getItem(`doctor_onboarded_${currentAccount}`);
-      if (hasProfile) {
-        // User already has a profile, redirect to main dashboard
-        router.push('/doctordashboard');
-      }
+  
+  // Replace your existing useEffect for profile checking with this:
+useEffect(() => {
+  // Check authentication first
+  if (!session) {
+    Logger.warn('DoctorWelcome', 'No active session, redirecting to sign in');
+    router.push('/api/auth/signin');
+    return;
+  }
+  
+  // Then check for wallet and profile
+  if (currentAccount) {
+    const hasProfile = localStorage.getItem(`doctor_onboarded_${currentAccount}`);
+    if (hasProfile) {
+      // User already has a profile, redirect to main dashboard
+      router.push('/doctordashboard');
     }
-  }, [currentAccount, router]);
+  }
+}, [currentAccount, router, session]);
 
   // Log component lifecycle
   useEffect(() => {
@@ -116,6 +130,7 @@ const DoctorWelcome: React.FC = () => {
         return;
       }
 
+         
       // Create profile using context method
       await createDoctorProfile({
         name: doctorProfile.name,

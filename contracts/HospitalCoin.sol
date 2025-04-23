@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract HospitalCoin is ERC20, Ownable {
+contract HospitalCoin is ERC20("HXLiuCoin", "HLX"), Ownable(msg.sender) {
     // Coin details
     uint256 public constant MAX_SUPPLY = 10_000_000 * 10**18;  // 10 million tokens
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10**18;  // 1 million initial supply
@@ -41,9 +41,11 @@ contract HospitalCoin is ERC20, Ownable {
         address doctor
     );
 
-    constructor() ERC20("HXLiuCoin", "HLX") {
-        _mint(msg.sender, INITIAL_SUPPLY);
-    }
+   
+  constructor() {
+    _mint(msg.sender, INITIAL_SUPPLY);
+  }
+
 
     // Request an appointment
     function requestAppointment(

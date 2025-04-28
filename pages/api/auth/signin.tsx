@@ -1,75 +1,31 @@
-import { ComponentType, FC, useState, useEffect, useContext } from 'react';
+import { ComponentType, FC, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import {
-  Avatar,
+  Box,
   Button,  
   Flex,
   Heading,
-  Menu,
-  useDisclosure,
-  MenuButton,
-  MenuList,
   Text,
-  useClipboard,
-  Input,
-  Stack,
-  ButtonProps,  
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
-  Box,
-  Grid,
+  VStack,
+  useToast,
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  chakra,
+  Input,
+  Link as ChakraLink,
+  Divider,
+  chakra
 } from '@chakra-ui/react';
-
-import { useAppToast } from 'hooks/index';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { BsGithub, BsTwitter, BsGoogle } from 'react-icons/bs';
-import { signInWithPopup } from 'firebase/auth';
-import { GoogleAuthProvider, TwitterAuthProvider } from 'firebase/auth';
-import { auth, db } from '../../../services/firebaseConfig';
-import { VStack } from '@chakra-ui/react';
 import { Logger } from '@/utils/logger';
+import FirebaseAuthService from '@/services/firebaseAuthService';
 
-const providers = [
-  { name: 'github',   Icon: BsGithub },
-  { name: 'twitter', Icon: BsTwitter },
-  { name: 'google', Icon: BsGoogle },
-];
-
-interface LoginProps {
-  isCollapsed?: boolean;
-  username?: string;
-  email?: string;
-  password?: string;
-}
-
-const SignIn: FC<LoginProps> = ({ isCollapsed = false, username, email, password }) => {
-  Logger.info('SignIn', 'Component rendering', { isCollapsed });
-  
+const SignIn: FC = () => {
   const router = useRouter();
+  const toast = useToast();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [emailInput, setEmailInput] = useState(email || '');
-
-  const { hasCopied, onCopy } = useClipboard(username || '');
-  const toast = useAppToast();
-  const stackSpacing = isCollapsed ? 4 : 1;
-
-  const { data: session, status } = useSession();
-
-  
-
-useEffect(() => {
-  if (hasCopied) {
-    Logger.debug('SignIn', 'Login details copied');
-    toast.showToast('Login details copied', 'info'); // Potential issue
-  }
-}, [hasCopied, toast]);
 
   // Log component lifecycle
   useEffect(() => {
@@ -80,182 +36,187 @@ useEffect(() => {
     };
   }, []);
 
-  // Log session status changes
-  useEffect(() => {
-    Logger.debug('SignIn', 'Session status changed', { status });
-    
-    if (status === 'authenticated') {
-      Logger.info('SignIn', 'User authenticated', { 
-        userId: session?.user?.id,
-        email: session?.user?.email 
-      });
-    }
-  }, [status, session]);
-
-  useEffect(() => {
-    if (hasCopied) {
-      Logger.debug('SignIn', 'Login details copied');
-      toast.showToast('Login details copied', 'info');
-    }
-  }, [hasCopied, toast]);
-
-  if (status === 'loading') return <Heading>Checking Authentication ...</Heading>;
-  if (session) {
-    Logger.info('SignIn', 'User already signed in, redirecting to home', {
-      userId: session?.user?.id
-    });
-    
-    setTimeout(() => {
-      router.push('/');
-    }, 5000);
-    return <Heading>You are already signed in</Heading>;
-  }
-
-  const handleOAuthSignIn = (provider: string) => async () => {
-    Logger.info('SignIn', 'OAuth sign in initiated', { provider });
+  // Handle social login providers
+  const handleSocialLogin = async (provider: 'google' | 'github' | 'twitter') => {
     setIsLoading(true);
     
     try {
-      await signIn(provider);
-      Logger.info('SignIn', 'OAuth sign in completed', { provider });
+      Logger.info('SignIn', `${provider} sign in initiated`);
+      
+      // Use NextAuth signIn method for consistent session handling
+      const result = await signIn(provider, { 
+        redirect: false, 
+        callbackUrl: '/auth/new-user' 
+      });
+
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+
+      // Successful login
+      toast({
+        title: "Sign In Successful",
+        description: `Signed in with ${provider}`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      // Redirect to new user or dashboard
+      router.push('/auth/new-user');
     } catch (error) {
-      Logger.error('SignIn', 'OAuth sign in failed', { 
-        provider,
+      Logger.error('SignIn', `${provider} sign in failed`, { 
         error: error instanceof Error ? error.message : String(error)
       });
+
+      toast({
+        title: "Sign In Failed",
+        description: error instanceof Error ? error.message : "An error occurred during sign in",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleFirebaseGoogleSignIn = async () => {
-    Logger.info('SignIn', 'Firebase Google sign in initiated');
-    setIsLoading(true);
-    
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      Logger.info('SignIn', 'Firebase Google sign in successful', { 
-        userId: result.user.uid 
-      });
-      
-      router.push('/welcome');
-    } catch (error: any) {
-      Logger.error('SignIn', 'Firebase Google sign in failed', { 
-        error: error.message,
-        code: error.code
-      });
-      
-      console.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleFirebaseTwitterSignIn = async () => {
-    Logger.info('SignIn', 'Firebase Twitter sign in initiated');
-    setIsLoading(true);
-    
-    const provider = new TwitterAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      Logger.info('SignIn', 'Firebase Twitter sign in successful', { 
-        userId: result.user.uid 
-      });
-      
-      router.push('/welcome');
-    } catch (error: any) {
-      Logger.error('SignIn', 'Firebase Twitter sign in failed', { 
-        error: error.message,
-        code: error.code
-      });
-      
-      console.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  // Handle email sign in
+  const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    Logger.info('SignIn', 'Email sign in form submitted', { 
-      emailProvided: !!emailInput 
-    });
-    
-    if (!emailInput) {
-      Logger.warn('SignIn', 'Email sign in attempted without email');
-      return false;
-    }
-    
     setIsLoading(true);
-    signIn('email', { email: emailInput, redirect: false })
-      .then(result => {
-        Logger.info('SignIn', 'Email sign in initiated', { 
-          success: result?.ok,
-          error: result?.error
-        });
-      })
-      .catch(error => {
-        Logger.error('SignIn', 'Email sign in failed', { 
-          error: error instanceof Error ? error.message : String(error)
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    Logger.debug('SignIn', 'Email input changed');
-    setEmailInput(e.target.value);
+    try {
+      Logger.info('SignIn', 'Email sign in initiated');
+
+      // Validate email
+      if (!email) {
+        throw new Error('Please enter an email address');
+      }
+
+      // Use NextAuth for email sign in
+      const result = await signIn('email', { 
+        email, 
+        redirect: false, 
+        callbackUrl: '/auth/verify-request' 
+      });
+
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+
+      toast({
+        title: "Verification Email Sent",
+        description: "Check your email to complete sign in",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+
+      // Redirect to verification page
+      router.push('/auth/verify-request');
+    } catch (error) {
+      Logger.error('SignIn', 'Email sign in failed', { 
+        error: error instanceof Error ? error.message : String(error)
+      });
+
+      toast({
+        title: "Sign In Failed",
+        description: error instanceof Error ? error.message : "An error occurred during sign in",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <Box maxW="md" mx="auto" mt={8}>
-      <Heading mb={6}>Sign In</Heading>
-      <chakra.form onSubmit={handleSubmit}>
-        <FormControl>
-          <FormLabel>Email Address</FormLabel>
-          <Input 
-            type="email" 
-            value={emailInput}
-            onChange={handleEmailChange} 
-          />
-        </FormControl>
-        {providers.map((item, index) => (
-          <Box key={index}>
-            <VStack>
-              <Button
-                type="submit"
-                key={item.name}
-                leftIcon={<item.Icon />}
-                onClick={handleOAuthSignIn(item.name)}
-                textTransform="uppercase"
-                w="100%"
-                isLoading={isLoading}
-              >
-                Sign in with {item.name}
-              </Button>
-            </VStack>
-          </Box>
-        ))}
+    <Box maxW="md" mx="auto" mt={8} p={6} borderWidth={1} borderRadius="lg">
+      <Heading mb={6} textAlign="center">Sign In to Huaxi Blockchain</Heading>
+
+      <chakra.form onSubmit={handleEmailSignIn}>
+        <VStack spacing={4}>
+          {/* Email Input */}
+          <FormControl>
+            <FormLabel>Email Address</FormLabel>
+            <Input 
+              type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+            />
+          </FormControl>
+
+          {/* Email Sign In Button */}
+          <Button 
+            type="submit" 
+            colorScheme="blue" 
+            width="full"
+            isLoading={isLoading}
+          >
+            Continue with Email
+          </Button>
+
+          {/* Divider */}
+          <Flex align="center" width="full" my={4}>
+            <Divider />
+            <Text px={4} color="gray.500">OR</Text>
+            <Divider />
+          </Flex>
+
+          {/* Social Login Buttons */}
+          <VStack spacing={3} width="full">
+            <Button
+              leftIcon={<BsGoogle />}
+              colorScheme="red"
+              width="full"
+              onClick={() => handleSocialLogin('google')}
+              isLoading={isLoading}
+            >
+              Continue with Google
+            </Button>
+
+            <Button
+              leftIcon={<BsGithub />}
+              colorScheme="gray"
+              width="full"
+              onClick={() => handleSocialLogin('github')}
+              isLoading={isLoading}
+            >
+              Continue with GitHub
+            </Button>
+
+            <Button
+              leftIcon={<BsTwitter />}
+              colorScheme="twitter"
+              width="full"
+              onClick={() => handleSocialLogin('twitter')}
+              isLoading={isLoading}
+            >
+              Continue with Twitter
+            </Button>
+          </VStack>
+
+          {/* Additional Links */}
+          <Flex justifyContent="space-between" width="full" mt={4}>
+            <ChakraLink 
+              color="blue.500" 
+              onClick={() => router.push('/auth/reset-password')}
+            >
+              Forgot Password?
+            </ChakraLink>
+            <ChakraLink 
+              color="blue.500" 
+              onClick={() => router.push('/auth/signup')}
+            >
+              Create an Account
+            </ChakraLink>
+          </Flex>
+        </VStack>
       </chakra.form>
-      <Stack spacing={4} mt={4}>
-        <Button 
-          colorScheme="blue" 
-          onClick={handleFirebaseGoogleSignIn}
-          isLoading={isLoading}
-        >
-          Sign in with Google
-        </Button>
-        <Button 
-          colorScheme="twitter" 
-          onClick={handleFirebaseTwitterSignIn}
-          isLoading={isLoading}
-        >
-          Sign in with Twitter
-        </Button>
-      </Stack>
     </Box>
   );
 };

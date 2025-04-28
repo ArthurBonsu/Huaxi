@@ -17,6 +17,7 @@ import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { usePatientDoctorContext } from '@/contexts/PatientDoctorContext';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { Logger } from '@/utils/logger';
 
 interface LayoutProps {
@@ -30,6 +31,7 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
     connectWallet 
   } = usePatientDoctorContext();
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     Logger.info('AppLayout', 'Component mounted');
@@ -69,7 +71,7 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const handleSignIn = () => {
-    Logger.info('AppLayout', 'Sign in button clicked');
+    Logger.info('AppLayout', 'Get Started button clicked');
     signIn();
   };
 
@@ -127,39 +129,40 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
               </Button>
             </Link>
 
-           
-{/* Authentication - fix the comment syntax */}
-{status === 'authenticated' && session?.user ? (
-  <Menu>
-    <MenuButton>
-      <Avatar 
-        size="sm" 
-        name={(session.user.name || session.user.email || "User") as string}
-        src={session.user.image || undefined} 
-      />
-    </MenuButton>
-    <MenuList>
-      <MenuItem>{session.user.name || session.user.email || "User"}</MenuItem>
-      <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
-    </MenuList>
-  </Menu>
-) : status === 'loading' ? (
-  <Button 
-    colorScheme="teal"
-    isLoading
-    mr={4}
-  >
-    Loading...
-  </Button>
-) : (
-  <Button 
-    colorScheme="teal"
-    onClick={handleSignIn}
-    mr={4}
-  >
-    Sign In
-  </Button>
-)}
+            {/* Authentication */}
+            {status === 'authenticated' && session?.user ? (
+              <Menu>
+                <MenuButton>
+                  <Avatar 
+                    size="sm" 
+                    name={(session.user.name || session.user.email || "User") as string}
+                    src={session.user.image || undefined} 
+                  />
+                </MenuButton>
+                <MenuList>
+                  <MenuItem>{session.user.name || session.user.email || "User"}</MenuItem>
+                  <MenuItem onClick={() => router.push('/auth/new-user')}>Complete Profile</MenuItem>
+                  <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+                </MenuList>
+              </Menu>
+            ) : status === 'loading' ? (
+              <Button 
+                colorScheme="teal"
+                isLoading
+                mr={4}
+              >
+                Loading...
+              </Button>
+            ) : (
+             <Button 
+                colorScheme="teal"
+                onClick={handleSignIn}
+                mr={4}
+              >
+                Get Started
+              </Button>
+            )}
+
             {/* Wallet Connection */}
             {!currentAccount ? (
               <Button 

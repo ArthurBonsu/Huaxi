@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, useContext } from 'react';
+// pages/api/auth/[...nextauth].ts
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import TwitterProvider from 'next-auth/providers/twitter';
@@ -8,6 +8,21 @@ import clientPromise from 'database/ConnectDB';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Logger } from '@/utils/logger';
+
+// User profile interface that can be added to database
+interface UserProfile {
+  userId: string;
+  role?: 'patient' | 'doctor';
+  name?: string;
+  profileCompleted?: boolean;
+  walletAddress?: string;
+  specialization?: string; // For doctors
+  dateOfBirth?: string;
+  phoneNumber?: string;
+  address?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const options: NextAuthOptions = {
   providers: [
@@ -43,30 +58,64 @@ const options: NextAuthOptions = {
       });
       
       if (session.user) {
-        session.user.id = token.id as string;
+        // Use type assertion to avoid type errors
+        (session.user as any).id = user?.id || token.sub || '';
         
-        // Add a flag to indicate if this is a new user
+        // Add isNewUser flag to session
         (session.user as any).isNewUser = token.isNewUser || false;
+        
+        // Add user role to session if available
+        if (token.role) {
+          (session.user as any).role = token.role;
+        }
+        
+        // Add profileCompleted flag to session
+        (session.user as any).profileCompleted = token.profileCompleted || false;
       }
+      
       return session;
     },
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user, account, profile, isNewUser }) {
       Logger.debug('Auth:NextAuth', 'JWT callback', { 
         tokenId: token.jti,
         userId: user?.id,
-        isNewUser: user?.id ? true : token.isNewUser
+        isNewUser: isNewUser
       });
       
-      // Set isNewUser flag
+      // Set user ID and isNewUser flag
       if (user) {
         token.id = user.id;
-        token.isNewUser = true;
+        token.isNewUser = isNewUser;
       }
 
-      // Check if the user has selected a role
-      if (typeof window !== 'undefined') {
-        const hasSelectedRole = localStorage.getItem(`user_role_${token.id}`);
-        token.hasSelectedRole = !!hasSelectedRole;
+      // Check if we have user profile information in the database
+      if (token.sub) {
+        try {
+          const client = await clientPromise;
+          const db = client.db();
+          
+          // Try to find user profile in profiles collection
+          const userProfile = await db.collection('profiles')
+            .findOne({ userId: token.sub });
+          
+          if (userProfile) {
+            // Add profile data to token
+            token.role = userProfile.role;
+            token.profileCompleted = userProfile.profileCompleted;
+            token.walletAddress = userProfile.walletAddress;
+          } else {
+            // No profile found, user needs to complete profile
+            token.profileCompleted = false;
+          }
+        } catch (error) {
+          Logger.error('Auth:NextAuth', 'Error fetching user profile', {
+            userId: token.sub,
+            error: error instanceof Error ? error.message : String(error)
+          });
+          
+          // Don't fail if database query fails
+          token.profileCompleted = false;
+        }
       }
       
       return token;
@@ -78,13 +127,25 @@ const options: NextAuthOptions = {
         isNewUser: !user.email
       });
       
-      // Additional checks can be added here if needed
+      // Allow sign in
       return true;
     },
     async redirect({ url, baseUrl }) {
-      // Customize redirect logic
-      // For new users, always redirect to new-user page
-      return baseUrl + '/auth/new-user';
+      Logger.debug('Auth:NextAuth', 'Redirect callback', { url, baseUrl });
+      
+      // Handle specific redirects
+      if (url.startsWith('/auth/verify-request')) {
+        return url;
+      }
+      
+      // Direct new users to the profile setup page
+      if (url.includes('?callbackUrl=')) {
+        const callbackUrl = new URL(url, baseUrl).searchParams.get('callbackUrl');
+        if (callbackUrl) return callbackUrl;
+      }
+      
+      // Default redirect to the new-user page
+      return `${baseUrl}/auth/new-user`;
     }
   },
   events: {
@@ -104,6 +165,30 @@ const options: NextAuthOptions = {
         userId: message.user.id,
         email: message.user.email
       });
+      
+      // Initialize user profile in database
+      try {
+        const client = await clientPromise;
+        const db = client.db();
+        
+        const newProfile: UserProfile = {
+          userId: message.user.id,
+          profileCompleted: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        
+        await db.collection('profiles').insertOne(newProfile);
+        
+        Logger.info('Auth:NextAuth', 'Created initial user profile', {
+          userId: message.user.id
+        });
+      } catch (error) {
+        Logger.error('Auth:NextAuth', 'Failed to create initial user profile', {
+          userId: message.user.id,
+          error: error instanceof Error ? error.message : String(error)
+        });
+      }
     },
     async linkAccount(message) {
       Logger.info('Auth:NextAuth', 'Account linked', { 
@@ -136,6 +221,14 @@ const options: NextAuthOptions = {
       Logger.debug('Auth:NextAuth', `Debug: ${code}`, { message });
     },
   },
+  // Increase session duration for better user experience
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  // Better security with CSRF protection
+  secret: process.env.NEXTAUTH_SECRET,
+  useSecureCookies: process.env.NODE_ENV === "production",
 };
 
 const authHandler = async (req: NextApiRequest, res: NextApiResponse) => {

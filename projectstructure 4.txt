@@ -92,7 +92,7 @@ huaxi-blockchain/
 │   ├── useEthers.ts
 │   └── useFetch.ts
 │
-├├── images/
+├── images/
 │   └── blockdaologo.png
 │
 ├── interfaces/
@@ -108,27 +108,43 @@ huaxi-blockchain/
 │   ├── protected.js
 │   ├── _app.tsx
 │   ├── _document.tsx
-│   └── api/
-│       ├── auth/
-│       │   ├── new-user.tsx
-│       │   ├── signin.tsx
-│       │   ├── signout.tsx
-│       │   ├── signup.tsx
-│       │   ├── verify-request.tsx
-│       │   └── [...nextauth].ts
-│       ├── doctordashboard/
-│       │   ├── doctordashboard.tsx
-│       │   ├── index.ts
-│       │   └── welcome.tsx
-│       ├── patientinteractionpage/
-│       │   ├── index.ts
-│       │   ├── patientinteractionpage.tsx
-│       │   └── welcome.tsx
-│       ├── theme/
-│       │   ├── index.ts
-│       │   └── theme.tsx
-│       └── transactions/
-│           └── process-transaction.ts
+│   │
+│   ├── api/
+│   │   ├── auth/
+│   │   │   ├── new-user.tsx
+│   │   │   ├── signin.tsx
+│   │   │   ├── signout.tsx
+│   │   │   ├── signup.tsx
+│   │   │   ├── verify-request.tsx
+│   │   │   └── [...nextauth].ts
+│   │   │
+│   │   ├── doctordashboard/
+│   │   │   ├── doctordashboard.tsx
+│   │   │   ├── index.ts
+│   │   │   └── welcome.tsx
+│   │   │
+│   │   ├── patientinteractionpage/
+│   │   │   ├── index.ts
+│   │   │   ├── patientinteractionpage.tsx
+│   │   │   └── welcome.tsx
+│   │   │
+│   │   ├── theme/
+│   │   │   ├── index.ts
+│   │   │   └── theme.tsx
+│   │   │
+│   │   ├── transactions/
+│   │   │   └── process-transaction.ts
+│   │   │
+│   │   └── user/
+│   │       └── profile.ts
+│   │
+│   ├── doctordashboard/
+│   │   ├── doctorwelcome.tsx
+│   │   └── index.tsx
+│   │
+│   └── patientinteractionpage/
+│       ├── index.tsx
+│       └── patientwelcome.tsx
 │
 ├── package.json
 ├── next.config.js

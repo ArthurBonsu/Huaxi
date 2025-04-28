@@ -1,4 +1,3 @@
-// pages/_app.tsx
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useCallback } from 'react';
@@ -10,19 +9,26 @@ import { PatientDoctorProvider } from '@/contexts/PatientDoctorContext';
 import AppLayout from '@/components/AppLayout';
 import { Logger } from '@/utils/logger';
 
+// Firebase Configuration
+import { auth } from '@/services/firebaseConfig';
+import FirebaseAuthService from '@/services/firebaseAuthService';
+
 // Global Styles
 import '@/styles/globals.css';
 
 // Custom Theme
 import theme from '@/theme';
 
+// NextAuth Configuration
+import { nextAuthConfig } from '@/lib/nextAuthConfig';
+
 function MyAppContent({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
 
   const checkAndRedirectNewUser = useCallback(() => {
-    if (status === 'authenticated') {
-      const userId = session?.user?.id;
+    if (status === 'authenticated' && session?.user) {
+      const userId = session.user.id;
       
       // Ensure we're only checking on client-side
       if (typeof window !== 'undefined') {
@@ -35,6 +41,30 @@ function MyAppContent({ Component, pageProps }: AppProps) {
       }
     }
   }, [session, status, router]);
+
+  // Firebase authentication state listener
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          // Optionally sync Firebase user with NextAuth session
+          const profile = await FirebaseAuthService.getUserProfile(firebaseUser.uid);
+          
+          Logger.info('App', 'Firebase auth state changed', {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email
+          });
+        } catch (error) {
+          Logger.error('App', 'Error syncing Firebase user', { 
+            error: error instanceof Error ? error.message : String(error) 
+          });
+        }
+      }
+    });
+
+    // Cleanup subscription
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     checkAndRedirectNewUser();
@@ -70,19 +100,7 @@ function MyApp(props: AppProps) {
         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
       });
       
-      // Set up performance monitoring
-      if (window.performance) {
-        const perfData = window.performance.timing;
-        const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-        
-        Logger.info('Application', 'Performance metrics', {
-          pageLoadTime: `${pageLoadTime}ms`,
-          domContentLoaded: `${perfData.domContentLoadedEventEnd - perfData.navigationStart}ms`,
-          firstPaint: `${perfData.responseEnd - perfData.requestStart}ms`
-        });
-      }
-      
-      // Listen for errors
+      // Set up error logging
       const handleError = (event: ErrorEvent) => {
         Logger.error('Application', 'Uncaught error', {
           message: event.message,
@@ -93,7 +111,6 @@ function MyApp(props: AppProps) {
         });
       };
       
-      // Listen for unhandled promise rejections
       const handleRejection = (event: PromiseRejectionEvent) => {
         Logger.error('Application', 'Unhandled promise rejection', {
           reason: event.reason,
@@ -111,44 +128,7 @@ function MyApp(props: AppProps) {
         Logger.info('Application', 'Application terminated');
       };
     }
-  }, []); // Empty dependency array to run only once on client-side
-
-  // Log route changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const router = require('next/router').default;
-
-      const handleRouteChangeStart = (url: string) => {
-        Logger.info('Router', 'Route change started', { 
-          to: url 
-        });
-      };
-
-      const handleRouteChangeComplete = (url: string) => {
-        Logger.info('Router', 'Route change completed', { 
-          url,
-        });
-      };
-
-      const handleRouteChangeError = (err: Error, url: string) => {
-        Logger.error('Router', 'Route change error', { 
-          url, 
-          error: err.message,
-          stack: err.stack
-        });
-      };
-
-      router.events.on('routeChangeStart', handleRouteChangeStart);
-      router.events.on('routeChangeComplete', handleRouteChangeComplete);
-      router.events.on('routeChangeError', handleRouteChangeError);
-
-      return () => {
-        router.events.off('routeChangeStart', handleRouteChangeStart);
-        router.events.off('routeChangeComplete', handleRouteChangeComplete);
-        router.events.off('routeChangeError', handleRouteChangeError);
-      };
-    }
-  }, []); // Empty dependency array to prevent unnecessary re-attaching
+  }, []); 
 
   // Ensure client-side rendering
   useEffect(() => {
@@ -161,7 +141,10 @@ function MyApp(props: AppProps) {
   }
 
   return (
-    <SessionProvider session={props.pageProps.session}>
+    <SessionProvider 
+      session={props.pageProps.session} 
+      {...nextAuthConfig}
+    >
       <ChakraProvider theme={theme}>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
         <PatientDoctorProvider>
